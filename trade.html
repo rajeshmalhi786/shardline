@@ -1077,7 +1077,9 @@ async function doApprove() {
 }
 
 function showSwapButton() {
+  document.getElementById('walletRow').style.display = 'none';
   var btn = document.getElementById('btnAction');
+  btn.style.display = 'block';
   btn.className = 'btn-action state-swap';
   btn.textContent = 'Swap';
   swapState = 'swap';
