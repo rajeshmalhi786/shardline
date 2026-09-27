@@ -644,6 +644,7 @@ function setDirection(newDir) {
   document.getElementById('sumMin').textContent = '—';
   document.getElementById('sumGain').textContent = '—';
   updatePools([0, 0, 0]);
+  if (swapState !== 'idle') checkApprovalThenShow();
   fetchQuote();
 }
 
@@ -957,6 +958,7 @@ var CONTRACTS = {
 var ERC20_ABI = [
   'function balanceOf(address owner) view returns (uint256)',
   'function approve(address spender, uint256 amount) returns (bool)',
+  'function allowance(address owner, address spender) view returns (uint256)',
   'function decimals() view returns (uint8)',
 ];
 var ROUTER_ABI = [
@@ -1037,8 +1039,20 @@ function showApproveButton() {
   var btn = document.getElementById('btnAction');
   btn.style.display = 'block';
   btn.className = 'btn-action state-approve';
-  btn.textContent = 'Approve tUSD';
+  var tokenInSym = direction === 'tUSD_to_tok' ? 'tUSD' : currentTok.sym;
+  btn.textContent = 'Approve ' + tokenInSym;
   swapState = 'approve';
+}
+
+async function checkApprovalThenShow() {
+  if (!connectedAddress || !ethersProvider || !contractsDeployed()) return;
+  var tokenInSym  = direction === 'tUSD_to_tok' ? 'tUSD' : currentTok.sym;
+  var tokenInAddr = CONTRACTS.tokens[tokenInSym];
+  try {
+    var token = new ethers.Contract(tokenInAddr, ERC20_ABI, ethersProvider);
+    var allowance = await token.allowance(connectedAddress, CONTRACTS.router);
+    if (allowance > 0n) { showSwapButton(); } else { showApproveButton(); }
+  } catch(e) { showApproveButton(); }
 }
 
 async function doApprove() {
@@ -1166,7 +1180,7 @@ async function connectMeta() {
     document.getElementById('btnMeta').innerHTML = '&#x1F98A; ' + short;
     document.getElementById('mintDesc').textContent = 'Click to mint 1,000,000 tUSD to your wallet.';
     showToast('MetaMask connected — ' + short);
-    showApproveButton();
+    checkApprovalThenShow();
     fetchAllBalances();
     fetchTxHistory();
   } catch (e) {
