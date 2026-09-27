@@ -595,6 +595,8 @@ function setToken(tok) {
   document.getElementById('payTokDot').style.background = tok.color;
   document.getElementById('payTokDot').textContent = tok.abbr;
   document.getElementById('payTokSym').textContent = tok.sym;
+  // Re-check approval whenever token changes (sell direction needs per-token approval)
+  if (connectedAddress && ethersProvider) checkApprovalThenShow();
   fetchQuote();
 }
 
