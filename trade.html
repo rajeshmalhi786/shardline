@@ -1187,13 +1187,7 @@ async function connectMeta() {
     document.getElementById('btnMeta').innerHTML = '&#x1F98A; ' + short;
     document.getElementById('mintDesc').textContent = 'Click to mint 1,000,000 tUSD to your wallet.';
     showToast('MetaMask connected — ' + short);
-    // Show loading state immediately, then resolve to Approve or Swap
-    document.getElementById('walletRow').style.display = 'none';
-    var _btn = document.getElementById('btnAction');
-    _btn.style.display = 'block';
-    _btn.className = 'btn-action state-approve';
-    _btn.textContent = 'Checking…';
-    checkApprovalThenShow();
+    showApproveButton();
     fetchAllBalances();
     fetchTxHistory();
   } catch (e) {
@@ -1208,12 +1202,7 @@ document.getElementById('btnPhantom').addEventListener('click', function() {
       document.getElementById('btnPhantom').innerHTML = '&#x1F47B; ' + connectedAddress.slice(0, 6) + '…' + connectedAddress.slice(-4);
       document.getElementById('mintDesc').textContent = 'Click to mint 1,000,000 tUSD to your wallet.';
       showToast('Phantom connected');
-      document.getElementById('walletRow').style.display = 'none';
-      var _pb = document.getElementById('btnAction');
-      _pb.style.display = 'block';
-      _pb.className = 'btn-action state-approve';
-      _pb.textContent = 'Checking…';
-      checkApprovalThenShow();
+      showApproveButton();
     }).catch(function() {});
   } else {
     showToast('Phantom not detected — install it from phantom.app');
