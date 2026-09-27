@@ -1020,6 +1020,12 @@ async function doSwap() {
     if (!poolAddrs.length) { showToast('No matching pool addresses'); return; }
 
     var totalAmtIn = ethers.parseEther(amtIn.toFixed(18));
+
+    // Fix floating-point drift: force splits to sum exactly to totalAmtIn
+    var splitSum = splitAmts.reduce(function(a, b) { return a + b; }, 0n);
+    if (splitAmts.length > 0 && splitSum !== totalAmtIn) {
+      splitAmts[splitAmts.length - 1] += totalAmtIn - splitSum;
+    }
     var minRaw = document.getElementById('sumMin').textContent.split(' ')[0].replace(/,/g, '');
     var minAmtOut = (minRaw && parseFloat(minRaw) > 0) ? ethers.parseEther(parseFloat(minRaw).toFixed(18)) : 0n;
 
