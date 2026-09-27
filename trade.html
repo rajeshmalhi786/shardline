@@ -12,27 +12,27 @@
 a{text-decoration:none;color:inherit}
 button{cursor:pointer;font-family:inherit}
 :root{
-  --bg:#0D0D0D;--bg-1:#141414;--bg-2:#1C1C1C;--bg-3:#222222;
-  --border:#222222;--border2:#2E2E2E;
-  --accent:#C8FF00;--text:#FFFFFF;--text-2:#999999;--text-3:#555555;
+  --bg:#08080F;--bg-1:#0F0F1C;--bg-2:#161626;--bg-3:#1D1D30;
+  --border:#1C1C30;--border2:#252545;
+  --accent:#818CF8;--text:#F1F5F9;--text-2:#94A3B8;--text-3:#475569;
 }
 body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;}
 
 /* Nav */
-nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:100;background:rgba(13,13,13,0.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding-inline:max(20px,calc(50% - 580px));}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:100;background:rgba(8,8,15,0.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding-inline:max(20px,calc(50% - 580px));}
 .nav-inner{display:flex;align-items:center;height:52px;}
 .nav-logo{display:flex;align-items:center;gap:8px;font-size:0.9rem;font-weight:600;letter-spacing:-0.01em;margin-right:28px;flex-shrink:0;}
-.logo-icon{width:28px;height:28px;background:var(--accent);border-radius:7px;display:grid;place-items:center;flex-shrink:0;}
+.logo-icon{width:28px;height:28px;background:linear-gradient(135deg,#6366F1,#A855F7);border-radius:8px;display:grid;place-items:center;flex-shrink:0;}
 .nav-links{display:flex;align-items:center;gap:2px;list-style:none;}
 .nav-links a{color:var(--text-2);font-size:0.82rem;padding:5px 12px;border-radius:6px;transition:color .12s,background .12s;}
 .nav-links a:hover{color:var(--text);background:var(--bg-2);}
 .nav-links a.active{color:var(--text);border-bottom:2px solid var(--text);border-radius:0;padding-bottom:3px;}
 .nav-right{display:flex;align-items:center;gap:8px;margin-left:auto;}
 .arc-badge{display:flex;align-items:center;gap:6px;font-size:0.68rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-2);border:1px solid var(--border2);padding:4px 10px;border-radius:20px;}
-.arc-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+.arc-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;box-shadow:0 0 6px rgba(129,140,248,0.6);}
 .nav-x{color:var(--text-3);display:grid;place-items:center;padding:4px;transition:color .12s;border:none;background:none;}
 .nav-x:hover{color:var(--text);}
-.btn-launch{background:var(--accent);color:#000;padding:7px 16px;border-radius:8px;font-size:0.8rem;font-weight:700;transition:opacity .12s;border:none;}
+.btn-launch{background:linear-gradient(135deg,#6366F1,#A855F7);color:#fff;padding:7px 16px;border-radius:8px;font-size:0.8rem;font-weight:700;transition:opacity .12s;border:none;}
 .btn-launch:hover{opacity:0.86;}
 
 /* Page header */
@@ -60,7 +60,7 @@ nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:100;background:rgba
 .swap-field{background:var(--bg-2);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;}
 .field-label-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
 .field-label{font-size:0.65rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-3);}
-.live-badge{font-size:0.62rem;font-weight:600;color:var(--accent);background:rgba(200,255,0,0.08);border:1px solid rgba(200,255,0,0.2);padding:2px 7px;border-radius:4px;}
+.live-badge{font-size:0.62rem;font-weight:600;color:var(--accent);background:rgba(129,140,248,0.08);border:1px solid rgba(129,140,248,0.2);padding:2px 7px;border-radius:4px;}
 .field-row{display:flex;align-items:center;gap:10px;}
 .swap-input{flex:1;background:none;border:none;outline:none;font-size:1.5rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;letter-spacing:-0.02em;width:0;}
 .swap-input::placeholder{color:var(--text-3);}
@@ -171,7 +171,7 @@ footer{margin-top:64px;padding-block:52px 0;padding-inline:max(20px,calc(50% - 5
 .footer-links a{font-size:0.8rem;color:var(--text-2);transition:color .12s;}
 .footer-links a:hover{color:var(--text);}
 .footer-bottom{border-top:1px solid var(--border);padding-block:14px;display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-3);gap:12px;flex-wrap:wrap;position:relative;z-index:1;}
-.footer-watermark{position:absolute;bottom:-0.1em;left:max(20px,calc(50% - 580px));right:0;font-size:clamp(80px,18vw,200px);font-weight:800;letter-spacing:-0.05em;color:rgba(255,255,255,0.032);pointer-events:none;line-height:1;white-space:nowrap;user-select:none;}
+.footer-watermark{position:absolute;bottom:-0.1em;left:max(20px,calc(50% - 580px));right:0;font-size:clamp(80px,18vw,200px);font-weight:800;letter-spacing:-0.05em;color:rgba(129,140,248,0.045);pointer-events:none;line-height:1;white-space:nowrap;user-select:none;}
 
 /* Toast */
 #_toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-2);border:1px solid var(--border2);padding:10px 18px;border-radius:8px;font-size:0.8rem;pointer-events:none;opacity:0;transition:opacity .2s;z-index:9999;white-space:nowrap;}
@@ -188,7 +188,7 @@ footer{margin-top:64px;padding-block:52px 0;padding-inline:max(20px,calc(50% - 5
 @keyframes fadeSlideLeft { from{opacity:0;transform:translateX(-28px)} to{opacity:1;transform:translateX(0)} }
 @keyframes fadeSlideRight{ from{opacity:0;transform:translateX(28px)} to{opacity:1;transform:translateX(0)} }
 @keyframes shimmer { 0%{opacity:1} 50%{opacity:0.4} 100%{opacity:1} }
-@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(200,255,0,0.15)} 50%{box-shadow:0 0 0 6px rgba(200,255,0,0)} }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(129,140,248,0.15)} 50%{box-shadow:0 0 0 6px rgba(129,140,248,0)} }
 @keyframes countBlink { 0%,100%{opacity:1} 50%{opacity:0.6} }
 
 .anim-fade  { opacity:0; transform:translateY(24px); transition:opacity 0.5s ease, transform 0.5s ease; }
@@ -231,10 +231,10 @@ footer{margin-top:64px;padding-block:52px 0;padding-inline:max(20px,calc(50% - 5
   transition: background 0.25s ease, color 0.25s ease, transform 0.15s ease, opacity 0.15s ease;
 }
 .btn-action:hover { transform:scale(1.02); opacity:0.92; }
-.btn-action.state-approve { background:#F0F0F0; color:#000; }
+.btn-action.state-approve { background:#E8E8F8; color:#3730A3; }
 .btn-action.state-approving { background:#E0E0E0; color:#555; cursor:wait; }
-.btn-action.state-swap { background:var(--accent); color:#000; }
-.btn-action.state-swapping { background:rgba(200,255,0,0.5); color:#000; cursor:wait; }
+.btn-action.state-swap { background:linear-gradient(135deg,#6366F1,#A855F7); color:#fff; }
+.btn-action.state-swapping { background:rgba(129,140,248,0.5); color:#000; cursor:wait; }
 .btn-action.state-done { background:#16A34A; color:#fff; }
 
 /* Wallet balances */
@@ -269,8 +269,8 @@ footer{margin-top:64px;padding-block:52px 0;padding-inline:max(20px,calc(50% - 5
   <div class="nav-inner">
     <a href="index.html" class="nav-logo">
       <div class="logo-icon">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M9 2L4 7L9 12" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <svg width="16" height="13" viewBox="0 0 16 13" fill="none">
+          <path d="M8 1L15 12H1L8 1Z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>
         </svg>
       </div>
       prism
@@ -492,8 +492,8 @@ footer{margin-top:64px;padding-block:52px 0;padding-inline:max(20px,calc(50% - 5
     <div>
       <div class="footer-logo">
         <div class="logo-icon">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M9 2L4 7L9 12" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg width="16" height="13" viewBox="0 0 16 13" fill="none">
+            <path d="M8 1L15 12H1L8 1Z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>
           </svg>
         </div>
         prism

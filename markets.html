@@ -11,16 +11,16 @@
 a{text-decoration:none;color:inherit}
 button{cursor:pointer;font-family:inherit}
 :root {
-  --bg:#0D0D0D; --bg-1:#141414; --bg-2:#1C1C1C; --bg-3:#222222;
-  --border:#222222; --border2:#2E2E2E;
-  --accent:#C8FF00; --text:#FFFFFF; --text-2:#999999; --text-3:#555555;
+  --bg:#08080F;--bg-1:#0F0F1C;--bg-2:#161626;--bg-3:#1D1D30;
+  --border:#1C1C30;--border2:#252545;
+  --accent:#818CF8;--text:#F1F5F9;--text-2:#94A3B8;--text-3:#475569;
 }
 body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
 
 /* â”€â”€ Nav â”€â”€ */
 nav {
   position:sticky; top:env(safe-area-inset-top,0px); z-index:100;
-  background:rgba(13,13,13,0.94); backdrop-filter:blur(12px);
+  background:rgba(8,8,15,0.92); backdrop-filter:blur(14px);
   border-bottom:1px solid var(--border);
   padding-inline:max(20px,calc(50% - 580px));
 }
@@ -31,8 +31,8 @@ nav {
   margin-right:28px; flex-shrink:0;
 }
 .logo-icon {
-  width:28px; height:28px; background:var(--accent);
-  border-radius:7px; display:grid; place-items:center; flex-shrink:0;
+  width:28px; height:28px; background:linear-gradient(135deg,#6366F1,#A855F7);
+  border-radius:8px; display:grid; place-items:center; flex-shrink:0;
 }
 .nav-links { display:flex; align-items:center; gap:2px; list-style:none; }
 .nav-links a {
@@ -47,11 +47,11 @@ nav {
   font-size:0.68rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase;
   color:var(--text-2); border:1px solid var(--border2); padding:4px 10px; border-radius:20px;
 }
-.arc-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); flex-shrink:0; }
+.arc-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); flex-shrink:0; box-shadow:0 0 6px rgba(129,140,248,0.6); }
 .nav-x { color:var(--text-3); display:grid; place-items:center; padding:4px; transition:color .12s; }
 .nav-x:hover { color:var(--text); }
 .btn-launch {
-  background:var(--accent); color:#000; padding:7px 16px;
+  background:linear-gradient(135deg,#6366F1,#A855F7); color:#fff; padding:7px 16px;
   border-radius:8px; font-size:0.8rem; font-weight:700; transition:opacity .12s; border:none;
 }
 .btn-launch:hover { opacity:0.86; }
@@ -181,7 +181,7 @@ footer {
 .footer-watermark {
   position:absolute; bottom:-0.1em; left:max(20px,calc(50% - 580px)); right:0;
   font-size:clamp(80px,18vw,200px); font-weight:800; letter-spacing:-0.05em;
-  color:rgba(255,255,255,0.032); pointer-events:none; line-height:1;
+  color:rgba(129,140,248,0.045); pointer-events:none; line-height:1;
   white-space:nowrap; user-select:none;
 }
 
@@ -213,7 +213,7 @@ footer {
 
 /* Table hover lift */
 tbody tr { transition: background 0.15s ease; }
-tbody tr:hover { background: rgba(200,255,0,0.03) !important; }
+tbody tr:hover { background: rgba(129,140,248,0.03) !important; }
 
 /* Contract / venue card hover */
 .contract-card, .venue-pill {
@@ -235,8 +235,8 @@ tbody tr:hover { background: rgba(200,255,0,0.03) !important; }
   <div class="nav-inner">
     <a href="index.html" class="nav-logo">
       <div class="logo-icon">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M9 2L4 7L9 12" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <svg width="16" height="13" viewBox="0 0 16 13" fill="none">
+          <path d="M8 1L15 12H1L8 1Z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>
         </svg>
       </div>
       prism
@@ -313,8 +313,8 @@ tbody tr:hover { background: rgba(200,255,0,0.03) !important; }
     <div>
       <div class="footer-logo">
         <div class="logo-icon">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M9 2L4 7L9 12" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg width="16" height="13" viewBox="0 0 16 13" fill="none">
+            <path d="M8 1L15 12H1L8 1Z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>
           </svg>
         </div>
         prism
