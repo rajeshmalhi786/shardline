@@ -249,6 +249,16 @@ footer{margin-top:64px;padding-block:52px 0;padding-inline:max(20px,calc(50% - 5
 .bal-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 .bal-val{font-size:0.95rem;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:-0.02em;}
 .bal-val.loading{color:var(--text-3);}
+
+/* Transaction history */
+.tx-row{display:grid;grid-template-columns:1fr 1.6fr auto auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:0.8rem;}
+.tx-row:last-child{border-bottom:none;}
+.tx-pair{font-weight:700;}
+.tx-amt{font-family:'JetBrains Mono',monospace;color:var(--text-2);font-size:0.76rem;}
+.tx-pools{color:var(--text-3);font-size:0.7rem;white-space:nowrap;}
+.tx-link{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:0.7rem;white-space:nowrap;transition:opacity .12s;}
+.tx-link:hover{opacity:0.7;}
+.tx-status{color:var(--text-3);font-size:0.8rem;padding:8px 0;}
 </style>
 </head>
 <body>
@@ -426,6 +436,17 @@ footer{margin-top:64px;padding-block:52px 0;padding-inline:max(20px,calc(50% - 5
         <span class="bal-addr" id="balAddr"></span>
       </div>
       <div class="bal-grid" id="balGrid"></div>
+    </div>
+  </div>
+
+  <!-- Transaction history panel (shown after connect) -->
+  <div id="txPanel" style="display:none;margin-top:14px;">
+    <div class="bal-card">
+      <div class="bal-header">
+        <span class="bal-title">Recent swaps</span>
+        <a id="txBasescanLink" href="https://sepolia.basescan.org/address/0x08C46606Df8bd37B43b5B5B224E829D7713feE61" target="_blank" rel="noopener" class="bal-addr" style="text-decoration:underline;color:var(--text-3)">Router on Basescan ↗</a>
+      </div>
+      <div id="txList"><div class="tx-status">Loading…</div></div>
     </div>
   </div>
 
@@ -939,12 +960,59 @@ var ERC20_ABI = [
 ];
 var ROUTER_ABI = [
   'function swapExactIn(address tokenIn, address tokenOut, uint256 amountIn, uint256 minAmountOut, address[] calldata pools, uint256[] calldata splits) returns (uint256 totalOut)',
+  'event SwapExecuted(address indexed sender, address indexed tokenIn, address indexed tokenOut, uint256 amountIn, uint256 amountOut, uint256 poolCount)',
 ];
 var FAUCET_ABI = [
   'function claim(address token) external',
   'function timeUntilNextClaim(address user, address token) view returns (uint256)',
 ];
 var SWAP_EXECUTED_ABI = ['event SwapExecuted(address indexed sender, address indexed tokenIn, address indexed tokenOut, uint256 amountIn, uint256 amountOut, uint256 poolCount)'];
+
+// Address → token symbol reverse lookup
+function buildAddrMap() {
+  var map = {};
+  Object.keys(CONTRACTS.tokens).forEach(function(sym) {
+    map[CONTRACTS.tokens[sym].toLowerCase()] = sym;
+  });
+  return map;
+}
+
+async function fetchTxHistory() {
+  if (!connectedAddress || !ethersProvider || !contractsDeployed()) return;
+  document.getElementById('txPanel').style.display = '';
+  var list = document.getElementById('txList');
+  list.innerHTML = '<div class="tx-status">Loading…</div>';
+  try {
+    var router = new ethers.Contract(CONTRACTS.router, ROUTER_ABI, ethersProvider);
+    var filter = router.filters.SwapExecuted(connectedAddress);
+    var currentBlock = await ethersProvider.getBlockNumber();
+    var fromBlock = Math.max(0, currentBlock - 50000);
+    var events = await router.queryFilter(filter, fromBlock);
+    var addrMap = buildAddrMap();
+    if (!events.length) {
+      list.innerHTML = '<div class="tx-status">No swaps yet — make your first trade above.</div>';
+      return;
+    }
+    var recent = events.slice(-10).reverse();
+    list.innerHTML = recent.map(function(ev) {
+      var inSym  = addrMap[ev.args.tokenIn.toLowerCase()]  || ev.args.tokenIn.slice(0,6);
+      var outSym = addrMap[ev.args.tokenOut.toLowerCase()] || ev.args.tokenOut.slice(0,6);
+      var amtIn  = parseFloat(ethers.formatEther(ev.args.amountIn));
+      var amtOut = parseFloat(ethers.formatEther(ev.args.amountOut));
+      var pools  = Number(ev.args.poolCount);
+      var hash   = ev.transactionHash;
+      return '<div class="tx-row">' +
+        '<span class="tx-pair">' + inSym + ' &rarr; ' + outSym + '</span>' +
+        '<span class="tx-amt">' + fmtBal(amtIn) + ' &rarr; ' + fmtBal(amtOut) + '</span>' +
+        '<span class="tx-pools">' + pools + (pools === 1 ? ' pool' : ' pools') + '</span>' +
+        '<a class="tx-link" href="https://sepolia.basescan.org/tx/' + hash + '" target="_blank" rel="noopener">' +
+        hash.slice(0,6) + '&hellip;' + hash.slice(-4) + ' &nearr;</a>' +
+        '</div>';
+    }).join('');
+  } catch(e) {
+    list.innerHTML = '<div class="tx-status">Could not load history.</div>';
+  }
+}
 
 var ethersProvider = null;
 var ethersSigner   = null;
@@ -1045,6 +1113,7 @@ async function doSwap() {
     btn.textContent = 'Swap complete ✓';
     showToast('Swapped ' + amtIn + ' ' + tokenInSym + ' → ' + amountOut.toFixed(4) + ' ' + tokenOutSym);
     fetchAllBalances();
+    fetchTxHistory();
     setTimeout(function() { showSwapButton(); }, 3000);
   } catch(e) {
     btn.className = 'btn-action state-swap';
@@ -1090,6 +1159,7 @@ async function connectMeta() {
     showToast('MetaMask connected — ' + short);
     showApproveButton();
     fetchAllBalances();
+    fetchTxHistory();
   } catch (e) {
     if (e.code !== 4001) showToast('MetaMask: ' + (e.shortMessage || e.message || 'error'));
   }
