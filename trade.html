@@ -890,6 +890,7 @@ function updatePools(rawShares) {
 
 /* Balance */
 var tusdBalance = Infinity; // updated after wallet connect
+var tokenBalances = {};     // sym → balance, updated after wallet connect
 var lastQuoteShards = [];   // shard data from last /api/quote response
 
 var ALL_TOKEN_LIST = [
@@ -938,7 +939,9 @@ async function fetchAllBalances() {
       var contract = new ethers.Contract(addr, ERC20_ABI, ethersProvider);
       var raw = await contract.balanceOf(connectedAddress);
       var val = parseFloat(ethers.formatEther(raw));
+      tokenBalances[t.sym] = val;
       if (t.sym === 'tUSD') { tusdBalance = val; checkBalance(); }
+      else { checkBalance(); }
       var el = document.getElementById('balVal_' + t.sym);
       if (el) { el.className = 'bal-val'; el.textContent = fmtBal(val); }
     } catch(e) {
@@ -951,16 +954,27 @@ async function fetchAllBalances() {
 function checkBalance() {
   if (swapState === 'idle') return;
   var amtIn = parseFloat(document.getElementById('amtIn').value) || 0;
-  var needsCheck = direction === 'tUSD_to_tok';
   var btn = document.getElementById('btnAction');
-  if (needsCheck && amtIn > 0 && tusdBalance < amtIn) {
+  if (direction === 'tUSD_to_tok' && amtIn > 0 && tusdBalance < amtIn) {
     document.getElementById('amtOut').textContent = 'Not enough tUSD';
     document.getElementById('sumMin').textContent = '—';
     document.getElementById('sumGain').textContent = '—';
     updatePools([0, 0, 0]);
     btn.disabled = true;
     btn.style.opacity = '0.45';
-    return true; // blocked
+    return true;
+  }
+  if (direction === 'tok_to_tUSD' && amtIn > 0) {
+    var sellBal = tokenBalances[currentTok.sym] || 0;
+    if (sellBal < amtIn) {
+      document.getElementById('amtOut').textContent = 'Not enough ' + currentTok.sym;
+      document.getElementById('sumMin').textContent = '—';
+      document.getElementById('sumGain').textContent = '—';
+      updatePools([0, 0, 0]);
+      btn.disabled = true;
+      btn.style.opacity = '0.45';
+      return true;
+    }
   }
   btn.disabled = false;
   btn.style.opacity = '';
