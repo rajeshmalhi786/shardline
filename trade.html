@@ -1203,6 +1203,7 @@ document.getElementById('btnPhantom').addEventListener('click', function() {
       document.getElementById('btnPhantom').innerHTML = '&#x1F47B; ' + connectedAddress.slice(0, 6) + '…' + connectedAddress.slice(-4);
       document.getElementById('mintDesc').textContent = 'Click to mint 1,000,000 tUSD to your wallet.';
       showToast('Phantom connected');
+      showApproveButton();
     }).catch(function() {});
   } else {
     showToast('Phantom not detected — install it from phantom.app');
