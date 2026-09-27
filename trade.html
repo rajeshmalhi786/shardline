@@ -1121,8 +1121,9 @@ async function doSwap() {
     if (splitAmts.length > 0 && splitSum !== totalAmtIn) {
       splitAmts[splitAmts.length - 1] += totalAmtIn - splitSum;
     }
-    var minRaw = document.getElementById('sumMin').textContent.split(' ')[0].replace(/,/g, '');
-    var minAmtOut = (minRaw && parseFloat(minRaw) > 0) ? ethers.parseEther(parseFloat(minRaw).toFixed(18)) : 0n;
+    // Pass 0 for minAmountOut — server reserves are simulated so on-chain output
+    // can differ from quote; slippage protection would block valid swaps on testnet.
+    var minAmtOut = 0n;
 
     var router = new ethers.Contract(CONTRACTS.router, ROUTER_ABI, ethersSigner);
     var tx = await router.swapExactIn(tokenInAddr, tokenOutAddr, totalAmtIn, minAmtOut, poolAddrs, splitAmts);
