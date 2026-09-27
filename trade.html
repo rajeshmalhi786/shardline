@@ -236,6 +236,19 @@ footer{margin-top:64px;padding-block:52px 0;padding-inline:max(20px,calc(50% - 5
 .btn-action.state-swap { background:var(--accent); color:#000; }
 .btn-action.state-swapping { background:rgba(200,255,0,0.5); color:#000; cursor:wait; }
 .btn-action.state-done { background:#16A34A; color:#fff; }
+
+/* Wallet balances */
+.bal-card{background:var(--bg-1);border:1px solid var(--border2);border-radius:16px;padding:20px 20px 16px;}
+.bal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.bal-title{font-size:0.85rem;font-weight:700;}
+.bal-addr{font-size:0.7rem;color:var(--text-3);font-family:'JetBrains Mono',monospace;}
+.bal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;}
+.bal-item{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;transition:border-color .15s;}
+.bal-item:hover{border-color:var(--border2);}
+.bal-sym{font-size:0.7rem;font-weight:700;color:var(--text-3);display:flex;align-items:center;gap:5px;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.04em;}
+.bal-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.bal-val{font-size:0.95rem;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:-0.02em;}
+.bal-val.loading{color:var(--text-3);}
 </style>
 </head>
 <body>
@@ -403,6 +416,17 @@ footer{margin-top:64px;padding-block:52px 0;padding-inline:max(20px,calc(50% - 5
       <p class="shard-foot">Priced from live pool reserves every 12 seconds. The router holds the whole route to the guaranteed minimum &mdash; if it cannot be met, nothing moves.</p>
     </div>
 
+  </div>
+
+  <!-- Wallet balances panel (shown after connect) -->
+  <div id="balancePanel" style="display:none;margin-top:14px;">
+    <div class="bal-card">
+      <div class="bal-header">
+        <span class="bal-title">Wallet balances</span>
+        <span class="bal-addr" id="balAddr"></span>
+      </div>
+      <div class="bal-grid" id="balGrid"></div>
+    </div>
   </div>
 
   <!-- Step mini-cards -->
@@ -709,15 +733,60 @@ function updatePools(rawShares) {
 var tusdBalance = Infinity; // updated after wallet connect
 var lastQuoteShards = [];   // shard data from last /api/quote response
 
-async function fetchBalance() {
+var ALL_TOKEN_LIST = [
+  {sym:'tUSD',  color:'#C8FF00'},
+  {sym:'tSPY',  color:'#DC2626'},
+  {sym:'tQQQ',  color:'#2563EB'},
+  {sym:'tNVDA', color:'#16A34A'},
+  {sym:'tAAPL', color:'#6B7280'},
+  {sym:'tTSLA', color:'#EF4444'},
+  {sym:'tMSFT', color:'#3B82F6'},
+  {sym:'tAMZN', color:'#374151'},
+  {sym:'tCOIN', color:'#1D4ED8'},
+];
+
+function fmtBal(v) {
+  if (v < 0.0001) return '0';
+  if (v >= 1000000) return (v/1000000).toLocaleString(undefined,{maximumFractionDigits:2}) + 'M';
+  if (v >= 10000)   return v.toLocaleString(undefined,{maximumFractionDigits:0});
+  if (v >= 100)     return v.toLocaleString(undefined,{maximumFractionDigits:2});
+  return v.toLocaleString(undefined,{minimumFractionDigits:4,maximumFractionDigits:4});
+}
+
+async function fetchAllBalances() {
   if (!connectedAddress || !ethersProvider) return;
-  try {
-    if (!contractsDeployed()) { tusdBalance = Infinity; checkBalance(); return; }
-    var token = new ethers.Contract(CONTRACTS.tokens.tUSD, ERC20_ABI, ethersProvider);
-    var raw = await token.balanceOf(connectedAddress);
-    tusdBalance = parseFloat(ethers.formatEther(raw));
-  } catch(e) { tusdBalance = Infinity; }
-  checkBalance();
+  if (!contractsDeployed()) { tusdBalance = Infinity; checkBalance(); return; }
+
+  // Show panel
+  document.getElementById('balancePanel').style.display = '';
+  document.getElementById('balAddr').textContent = connectedAddress.slice(0,6) + '…' + connectedAddress.slice(-4);
+
+  // Render loading shells on first call
+  var grid = document.getElementById('balGrid');
+  if (!grid.children.length) {
+    grid.innerHTML = ALL_TOKEN_LIST.map(function(t) {
+      return '<div class="bal-item">' +
+        '<div class="bal-sym"><span class="bal-dot" style="background:' + t.color + '"></span>' + t.sym + '</div>' +
+        '<div class="bal-val loading" id="balVal_' + t.sym + '">…</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  // Fetch all balances in parallel
+  await Promise.all(ALL_TOKEN_LIST.map(async function(t) {
+    try {
+      var addr = CONTRACTS.tokens[t.sym];
+      var contract = new ethers.Contract(addr, ERC20_ABI, ethersProvider);
+      var raw = await contract.balanceOf(connectedAddress);
+      var val = parseFloat(ethers.formatEther(raw));
+      if (t.sym === 'tUSD') { tusdBalance = val; checkBalance(); }
+      var el = document.getElementById('balVal_' + t.sym);
+      if (el) { el.className = 'bal-val'; el.textContent = fmtBal(val); }
+    } catch(e) {
+      var el = document.getElementById('balVal_' + t.sym);
+      if (el) { el.className = 'bal-val loading'; el.textContent = '—'; }
+    }
+  }));
 }
 
 function checkBalance() {
@@ -969,7 +1038,7 @@ async function doSwap() {
     btn.className = 'btn-action state-done';
     btn.textContent = 'Swap complete ✓';
     showToast('Swapped ' + amtIn + ' ' + tokenInSym + ' → ' + amountOut.toFixed(4) + ' ' + tokenOutSym);
-    fetchBalance();
+    fetchAllBalances();
     setTimeout(function() { showSwapButton(); }, 3000);
   } catch(e) {
     btn.className = 'btn-action state-swap';
@@ -1014,7 +1083,7 @@ async function connectMeta() {
     document.getElementById('mintDesc').textContent = 'Click to mint 1,000,000 tUSD to your wallet.';
     showToast('MetaMask connected — ' + short);
     showApproveButton();
-    fetchBalance();
+    fetchAllBalances();
   } catch (e) {
     if (e.code !== 4001) showToast('MetaMask: ' + (e.shortMessage || e.message || 'error'));
   }
@@ -1055,7 +1124,7 @@ document.getElementById('mintCard').addEventListener('click', async function() {
     title.textContent = '1,000,000 tUSD minted ✓';
     desc.textContent  = 'Sent to ' + connectedAddress.slice(0,6) + '…' + connectedAddress.slice(-4);
     showToast('1,000,000 tUSD minted!');
-    fetchBalance();
+    fetchAllBalances();
   } catch(e) {
     title.textContent = 'Mint 1,000,000 tUSD';
     var msg = e.reason || e.shortMessage || e.message || 'error';
