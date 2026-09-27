@@ -977,40 +977,48 @@ function buildAddrMap() {
   return map;
 }
 
+function renderTxEvents(events, addrMap) {
+  if (!events.length) return '<div class="tx-status">No swaps yet — make your first trade above.</div>';
+  var recent = events.slice(-10).reverse();
+  return recent.map(function(ev) {
+    var inSym  = addrMap[ev.args.tokenIn.toLowerCase()]  || ev.args.tokenIn.slice(0,6);
+    var outSym = addrMap[ev.args.tokenOut.toLowerCase()] || ev.args.tokenOut.slice(0,6);
+    var amtIn  = parseFloat(ethers.formatEther(ev.args.amountIn));
+    var amtOut = parseFloat(ethers.formatEther(ev.args.amountOut));
+    var pools  = Number(ev.args.poolCount);
+    var hash   = ev.transactionHash;
+    return '<div class="tx-row">' +
+      '<span class="tx-pair">' + inSym + ' &rarr; ' + outSym + '</span>' +
+      '<span class="tx-amt">' + fmtBal(amtIn) + ' &rarr; ' + fmtBal(amtOut) + '</span>' +
+      '<span class="tx-pools">' + pools + (pools === 1 ? ' pool' : ' pools') + '</span>' +
+      '<a class="tx-link" href="https://sepolia.basescan.org/tx/' + hash + '" target="_blank" rel="noopener">' +
+      hash.slice(0,6) + '&hellip;' + hash.slice(-4) + ' &nearr;</a>' +
+      '</div>';
+  }).join('');
+}
+
 async function fetchTxHistory() {
   if (!connectedAddress || !ethersProvider || !contractsDeployed()) return;
   document.getElementById('txPanel').style.display = '';
   var list = document.getElementById('txList');
   list.innerHTML = '<div class="tx-status">Loading…</div>';
-  try {
-    var router = new ethers.Contract(CONTRACTS.router, ROUTER_ABI, ethersProvider);
-    var filter = router.filters.SwapExecuted(connectedAddress);
-    var currentBlock = await ethersProvider.getBlockNumber();
-    var fromBlock = Math.max(0, currentBlock - 50000);
-    var events = await router.queryFilter(filter, fromBlock);
-    var addrMap = buildAddrMap();
-    if (!events.length) {
-      list.innerHTML = '<div class="tx-status">No swaps yet — make your first trade above.</div>';
+  var addrMap = buildAddrMap();
+  var router = new ethers.Contract(CONTRACTS.router, ROUTER_ABI, ethersProvider);
+  var filter = router.filters.SwapExecuted(connectedAddress);
+  var currentBlock = await ethersProvider.getBlockNumber();
+  // Try progressively smaller ranges — public RPCs cap eth_getLogs block span
+  var ranges = [2000, 500, 100];
+  for (var i = 0; i < ranges.length; i++) {
+    try {
+      var fromBlock = Math.max(0, currentBlock - ranges[i]);
+      var events = await router.queryFilter(filter, fromBlock);
+      list.innerHTML = renderTxEvents(events, addrMap);
       return;
+    } catch(e) {
+      if (i === ranges.length - 1) {
+        list.innerHTML = '<div class="tx-status">History unavailable — RPC block range limit reached.</div>';
+      }
     }
-    var recent = events.slice(-10).reverse();
-    list.innerHTML = recent.map(function(ev) {
-      var inSym  = addrMap[ev.args.tokenIn.toLowerCase()]  || ev.args.tokenIn.slice(0,6);
-      var outSym = addrMap[ev.args.tokenOut.toLowerCase()] || ev.args.tokenOut.slice(0,6);
-      var amtIn  = parseFloat(ethers.formatEther(ev.args.amountIn));
-      var amtOut = parseFloat(ethers.formatEther(ev.args.amountOut));
-      var pools  = Number(ev.args.poolCount);
-      var hash   = ev.transactionHash;
-      return '<div class="tx-row">' +
-        '<span class="tx-pair">' + inSym + ' &rarr; ' + outSym + '</span>' +
-        '<span class="tx-amt">' + fmtBal(amtIn) + ' &rarr; ' + fmtBal(amtOut) + '</span>' +
-        '<span class="tx-pools">' + pools + (pools === 1 ? ' pool' : ' pools') + '</span>' +
-        '<a class="tx-link" href="https://sepolia.basescan.org/tx/' + hash + '" target="_blank" rel="noopener">' +
-        hash.slice(0,6) + '&hellip;' + hash.slice(-4) + ' &nearr;</a>' +
-        '</div>';
-    }).join('');
-  } catch(e) {
-    list.innerHTML = '<div class="tx-status">Could not load history.</div>';
   }
 }
 
