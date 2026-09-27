@@ -1,0 +1,881 @@
+<title>AURUM</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400&display=swap">
+
+<style>
+  :root {
+    --bg: #080705;
+    --surface: #0e0c09;
+    --text: #ddd3b4;
+    --muted: #7a6e57;
+    --accent: #b89a3c;
+    --accent-dim: #7a6429;
+    --rule: #1a1912;
+    color-scheme: dark;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Jost', system-ui, sans-serif;
+    font-weight: 300;
+    line-height: 1.75;
+    margin: 0;
+  }
+
+  .site-nav {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 200;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.1rem 2.5rem;
+    background: rgba(8,7,5,0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .nav-brand {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.45em;
+    color: var(--accent);
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-links a {
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.25s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding-inline: 2rem;
+  }
+
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-block: 10rem 8rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .hero-wordmark {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-size: clamp(4.5rem, 20vw, 13rem);
+    letter-spacing: 0.3em;
+    line-height: 1;
+    color: var(--text);
+    margin: 0 0 2.5rem;
+    padding-right: 0.3em;
+  }
+
+  .hero-byline {
+    font-size: 0.68rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 5rem;
+  }
+
+  .hero-drop {
+    width: 1px;
+    height: 5rem;
+    background: linear-gradient(to bottom, var(--accent-dim), transparent);
+  }
+
+  section {
+    padding-block: 7rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .section-eye {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .section-numeral {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .section-rule-line {
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  h2 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.2;
+    text-wrap: balance;
+    margin: 0 0 2rem;
+    color: var(--text);
+  }
+
+  h3 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 400;
+    font-size: 1.05rem;
+    margin: 0 0 0.4rem;
+    color: var(--text);
+  }
+
+  p {
+    max-width: 62ch;
+    margin: 0 0 1.5rem;
+    color: var(--text);
+    font-size: 0.95rem;
+    line-height: 1.85;
+  }
+
+  .lead {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(1.3rem, 3vw, 1.7rem);
+    font-weight: 300;
+    line-height: 1.55;
+    margin-bottom: 2.5rem;
+    color: var(--text);
+    max-width: 52ch;
+  }
+
+  .painting-wrap {
+    position: relative;
+    overflow: hidden;
+    line-height: 0;
+  }
+
+  .painting-canvas {
+    display: block;
+    width: 100%;
+    height: 360px;
+  }
+
+  .painting-attr {
+    position: absolute;
+    bottom: 1.2rem;
+    right: 1.5rem;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 0.65rem;
+    font-style: italic;
+    letter-spacing: 0.1em;
+    color: rgba(200,175,120,0.35);
+    pointer-events: none;
+  }
+
+  .ingredient-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 2.5rem 2rem;
+    margin-top: 3rem;
+  }
+
+  .ingredient { border-top: 1px solid var(--rule); padding-top: 1.2rem; }
+
+  .ingredient-name {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.1rem;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+
+  .ingredient-origin {
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+
+  .ingredient-desc {
+    font-size: 0.82rem;
+    line-height: 1.65;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  .process { margin-top: 3rem; }
+
+  .process-step {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 1.5rem;
+    padding-block: 2rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .step-n {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--accent-dim);
+    padding-top: 0.2rem;
+  }
+
+  .step-content h3 { font-size: 1rem; margin-bottom: 0.4rem; }
+  .step-content p { font-size: 0.85rem; color: var(--muted); margin: 0; max-width: none; }
+
+  .collection {
+    margin-top: 3rem;
+    border: 1px solid var(--rule);
+  }
+
+  .fragrance-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    align-items: start;
+    padding: 2.5rem;
+    border-bottom: 1px solid var(--rule);
+    transition: background 0.25s;
+  }
+
+  .fragrance-row:last-child { border-bottom: none; }
+  .fragrance-row:hover { background: var(--surface); }
+
+  .frag-family {
+    font-size: 0.6rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+
+  .frag-name {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: var(--text);
+    margin-bottom: 0.6rem;
+  }
+
+  .frag-notes { font-size: 0.8rem; color: var(--muted); line-height: 1.6; margin: 0; }
+
+  .frag-year {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 0.85rem;
+    color: var(--accent-dim);
+    white-space: nowrap;
+    padding-top: 0.2rem;
+  }
+
+  .ritual-steps { margin-top: 3rem; display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .ritual-step { display: flex; gap: 1.5rem; align-items: baseline; }
+
+  .ritual-dash {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    color: var(--accent-dim);
+    flex-shrink: 0;
+    font-size: 0.9rem;
+  }
+
+  .ritual-text { font-size: 0.9rem; color: var(--muted); line-height: 1.75; margin: 0; }
+
+  .form-row {
+    display: flex;
+    margin-top: 2rem;
+    border: 1px solid var(--rule);
+    flex-wrap: wrap;
+  }
+
+  .email-input {
+    flex: 1;
+    min-width: 200px;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 1rem 1.2rem;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    font-weight: 300;
+  }
+
+  .email-input::placeholder { color: var(--muted); }
+
+  .submit-btn {
+    background: transparent;
+    border: none;
+    border-left: 1px solid var(--rule);
+    color: var(--accent);
+    padding: 1rem 1.8rem;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.25s, color 0.25s;
+    white-space: nowrap;
+  }
+
+  .submit-btn:hover { background: var(--accent); color: var(--bg); }
+
+  .form-note {
+    font-size: 0.68rem;
+    color: var(--muted);
+    opacity: 0.6;
+    margin-top: 0.8rem;
+    letter-spacing: 0.04em;
+  }
+
+  .success-msg {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1rem;
+    font-style: italic;
+    color: var(--accent);
+    margin-top: 1.5rem;
+  }
+
+  footer {
+    padding-block: 4rem;
+    text-align: center;
+    border-top: 1px solid var(--rule);
+  }
+
+  .footer-mark {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.5em;
+    color: var(--muted);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.8rem;
+  }
+
+  .footer-copy { font-size: 0.6rem; letter-spacing: 0.1em; color: var(--muted); opacity: 0.4; }
+
+  .fade { opacity: 0; transform: translateY(14px); transition: opacity 0.85s ease, transform 0.85s ease; }
+  .fade.in { opacity: 1; transform: none; }
+
+  @media (max-width: 640px) {
+    .site-nav { padding-inline: 1.25rem; }
+    .nav-links { display: none; }
+    .wrap { padding-inline: 1.25rem; }
+    section { padding-block: 4.5rem; }
+    .hero { padding-block: 7rem 5rem; }
+    .painting-canvas { height: 230px; }
+    .fragrance-row { grid-template-columns: 1fr; gap: 0.5rem; }
+    .frag-year { display: none; }
+    .ingredient-grid { grid-template-columns: 1fr 1fr; }
+    .submit-btn { border-left: none; border-top: 1px solid var(--rule); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fade { opacity: 1; transform: none; transition: none; }
+  }
+</style>
+
+<nav class="site-nav">
+  <a href="#" class="nav-brand">AURUM</a>
+  <ul class="nav-links">
+    <li><a href="#house">House</a></li>
+    <li><a href="#philosophy">Philosophy</a></li>
+    <li><a href="#garden">Garden</a></li>
+    <li><a href="#atelier">Atelier</a></li>
+    <li><a href="#collection">Collection</a></li>
+    <li><a href="#correspondence">Correspondence</a></li>
+  </ul>
+</nav>
+
+<div class="hero">
+  <h1 class="hero-wordmark">AURUM</h1>
+  <p class="hero-byline">A house of rare fragrance &nbsp;·&nbsp; Est. MMIV</p>
+  <div class="hero-drop"></div>
+</div>
+
+<div class="painting-wrap">
+  <canvas id="p1" class="painting-canvas"></canvas>
+  <span class="painting-attr">Jasmine harvest, Grasse — after first light</span>
+</div>
+
+<section id="house">
+  <div class="wrap">
+    <div class="section-eye fade">
+      <span class="section-numeral">I</span>
+      <span class="section-rule-line"></span>
+    </div>
+    <h2 class="fade">The House</h2>
+    <p class="lead fade">AURUM was founded in the belief that a perfume is not a product. It is an argument — a position on time, on memory, on what the body can carry.</p>
+    <p class="fade">In 2004, perfumer Léa Voss left a career in haute couture to establish an atelier in the hills above Grasse. She sought fragrances that behaved less like fashion and more like music: things that unfold over time, that demand a second and third encounter before they fully reveal themselves.</p>
+    <p class="fade">AURUM produces a single annual collection. No reformulations. No flankers. Each formula is sealed, numbered, and released in a single edition — after which it retires to the archive.</p>
+  </div>
+</section>
+
+<section id="philosophy">
+  <div class="wrap">
+    <div class="section-eye fade">
+      <span class="section-numeral">II</span>
+      <span class="section-rule-line"></span>
+    </div>
+    <h2 class="fade">Philosophy</h2>
+    <p class="lead fade">Perfume is the only art that cannot be seen.</p>
+    <p class="fade">We work from a principle we call <em>accord before accord</em>: the agreement between two ingredients, discovered through patient trial, that produces a third thing neither would produce alone. This cannot be computed or accelerated. It requires time — time in the lab, time on the skin, time in a bottle set aside to evolve.</p>
+    <p class="fade">We reject synthetic musks. We do not use ISO E Super, Ambroxide, or any molecule whose ubiquity has made it inaudible. We work with naturals where possible, and when a synthetic is irreplaceable, we use it at concentrations low enough to be felt rather than named.</p>
+    <p class="fade">Our concentration is always extrait — 35–42% aromatic compounds. We see no reason to make a lesser thing.</p>
+  </div>
+</section>
+
+<div class="painting-wrap">
+  <canvas id="p2" class="painting-canvas"></canvas>
+  <span class="painting-attr">The laboratory, Avenue des Fleurs — high summer</span>
+</div>
+
+<section id="garden">
+  <div class="wrap">
+    <div class="section-eye fade">
+      <span class="section-numeral">III</span>
+      <span class="section-rule-line"></span>
+    </div>
+    <h2 class="fade">The Garden</h2>
+    <p class="fade">Every ingredient in an AURUM formula is traceable to a specific grower, region, and harvest year. The following notes appear in our current collection.</p>
+    <div class="ingredient-grid">
+      <div class="ingredient fade">
+        <div class="ingredient-name">May Rose</div>
+        <div class="ingredient-origin">Grasse, Provence — 2024</div>
+        <p class="ingredient-desc">Rosa centifolia, harvested by hand at dawn. Heavy, honeyed, slightly green. The backbone of three current formulas.</p>
+      </div>
+      <div class="ingredient fade">
+        <div class="ingredient-name">Oud Cambodi</div>
+        <div class="ingredient-origin">Kampong Cham, Cambodia</div>
+        <p class="ingredient-desc">Agarwood from naturally infected Aquilaria trees. Dense, animalic, almost medicinal. Aged eight years before distillation.</p>
+      </div>
+      <div class="ingredient fade">
+        <div class="ingredient-name">Mysore Sandalwood</div>
+        <div class="ingredient-origin">Karnataka, India — licensed harvest</div>
+        <p class="ingredient-desc">Santalum album, now strictly regulated. Creamy, milky, persistent. No substitute has come close.</p>
+      </div>
+      <div class="ingredient fade">
+        <div class="ingredient-name">Enfleurage Tuberose</div>
+        <div class="ingredient-origin">Grasse, Provence — August</div>
+        <p class="ingredient-desc">Processed by cold enfleurage — an 18th century technique, slower than steam distillation, but the only method that captures tuberose's narcotic top note intact.</p>
+      </div>
+      <div class="ingredient fade">
+        <div class="ingredient-name">Labdanum</div>
+        <div class="ingredient-origin">Crete, Greece</div>
+        <p class="ingredient-desc">A resinous absolute from Cistus ladanifer. Ambery, leathery, with something of the sea. One of perfumery's great base notes.</p>
+      </div>
+      <div class="ingredient fade">
+        <div class="ingredient-name">Bergamot FCF</div>
+        <div class="ingredient-origin">Reggio Calabria, Italy — 2024</div>
+        <p class="ingredient-desc">Bergapten-free expression from the Calabrian coast. Precise citrus brightness without photosensitivity risk. Opens most of our brighter compositions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="atelier">
+  <div class="wrap">
+    <div class="section-eye fade">
+      <span class="section-numeral">IV</span>
+      <span class="section-rule-line"></span>
+    </div>
+    <h2 class="fade">The Atelier</h2>
+    <p class="lead fade">A formula passes through five stages before it is bottled. Months pass between each.</p>
+    <div class="process fade">
+      <div class="process-step">
+        <span class="step-n">01</span>
+        <div class="step-content">
+          <h3>Accord Development</h3>
+          <p>The perfumer begins with a single material — an accord, a pairing — and works outward. Each modification is documented and given time to breathe before evaluation. A formula may see 40–60 iterations in this phase.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <span class="step-n">02</span>
+        <div class="step-content">
+          <h3>Wear Testing</h3>
+          <p>All evaluations are done on skin. No blotter strips, no solvent. A formula is applied each morning for three consecutive days before notes are recorded. Worn twice in different climates before advancing.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <span class="step-n">03</span>
+        <div class="step-content">
+          <h3>Maceration</h3>
+          <p>The raw concentrate is blended with 96% organic wheat ethanol and sealed. Minimum six weeks maceration; most formulas rest three to four months. The fragrance becomes coherent during this period.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <span class="step-n">04</span>
+        <div class="step-content">
+          <h3>Cold Filtration</h3>
+          <p>The macerated fragrance is held at −20°C for 72 hours. Waxes and insoluble molecules precipitate out and are filtered through cellulose. Some translucency is sacrificed for long-term stability.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <span class="step-n">05</span>
+        <div class="step-content">
+          <h3>Final Evaluation</h3>
+          <p>Léa Voss evaluates the final batch against the sealed master reference. If the accord has shifted — as naturals always do, year to year — the batch is adjusted or set aside for further maceration.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="painting-wrap">
+  <canvas id="p3" class="painting-canvas"></canvas>
+  <span class="painting-attr">Night-blooming jasmine — the garden at two in the morning</span>
+</div>
+
+<section id="collection">
+  <div class="wrap">
+    <div class="section-eye fade">
+      <span class="section-numeral">V</span>
+      <span class="section-rule-line"></span>
+    </div>
+    <h2 class="fade">Current Collection</h2>
+    <p class="fade">Three fragrances from the 2024 edition. Each produced in 320 numbered bottles. The 2023 edition is closed.</p>
+    <div class="collection fade">
+      <div class="fragrance-row">
+        <div>
+          <div class="frag-family">Floral Chypre</div>
+          <div class="frag-name">Sève</div>
+          <p class="frag-notes">Bergamot FCF · May Rose · Jasmine Sambac · Oakmoss · Labdanum<br><br>Opens with cold bergamot that gives way to a deep rose-jasmine heart, grounded by the most restrained use of oakmoss we have ever attempted.</p>
+        </div>
+        <span class="frag-year">MMXXIV / 01</span>
+      </div>
+      <div class="fragrance-row">
+        <div>
+          <div class="frag-family">Woody Oriental</div>
+          <div class="frag-name">Chambre Noire</div>
+          <p class="frag-notes">Oud Cambodi · Tuberose Enfleurage · Mysore Sandalwood · Vetiver · Benzoin<br><br>A dark, interior fragrance. The tuberose is narcotic but constrained by the oud; the sandalwood arrives late and stays. Not for brief occasions.</p>
+        </div>
+        <span class="frag-year">MMXXIV / 02</span>
+      </div>
+      <div class="fragrance-row">
+        <div>
+          <div class="frag-family">Aromatic Fougère</div>
+          <div class="frag-name">Lande</div>
+          <p class="frag-notes">Lavender · Galbanum · Orris Butter · Grey Musk · Ambergris Tincture<br><br>Named for the heathland above Voss's childhood home in Normandy. Dry, grey, with a sweetness that arrives only on the dry-down.</p>
+        </div>
+        <span class="frag-year">MMXXIV / 03</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="ritual">
+  <div class="wrap">
+    <div class="section-eye fade">
+      <span class="section-numeral">VI</span>
+      <span class="section-rule-line"></span>
+    </div>
+    <h2 class="fade">The Ritual</h2>
+    <p class="lead fade">A perfume at extrait concentration is not applied — it is placed.</p>
+    <p class="fade">The skin must be warm, clean, and lightly moisturised. The pulse points — inside the wrist, behind the ear, at the base of the throat — retain heat that drives the volatilisation of each accord in sequence.</p>
+    <div class="ritual-steps fade">
+      <div class="ritual-step">
+        <span class="ritual-dash">—</span>
+        <p class="ritual-text">Apply one drop. Not two. Wait ten minutes before assessing the opening. Most extraits take longer to open than an EDT; patience is part of the form.</p>
+      </div>
+      <div class="ritual-step">
+        <span class="ritual-dash">—</span>
+        <p class="ritual-text">Do not rub the wrist against the other. This ruptures the molecular bonds forming the initial accord and produces a result that was never designed.</p>
+      </div>
+      <div class="ritual-step">
+        <span class="ritual-dash">—</span>
+        <p class="ritual-text">Leave six to eight hours before reapplication. An extrait is not a daily cologne. It is a decision made once in the morning.</p>
+      </div>
+      <div class="ritual-step">
+        <span class="ritual-dash">—</span>
+        <p class="ritual-text">Store in darkness, below 20°C, away from fluctuating humidity. Keep the bottle full or very nearly so — contact with air accelerates oxidation of the top notes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="correspondence">
+  <div class="wrap">
+    <div class="section-eye fade">
+      <span class="section-numeral">VII</span>
+      <span class="section-rule-line"></span>
+    </div>
+    <h2 class="fade">Correspondence</h2>
+    <p class="fade">We release each new collection to a private list before any public announcement. Registered correspondents receive notification six weeks ahead and first access to numbered bottles.</p>
+    <p class="fade">We do not send newsletters, promotions, or seasonal communications. You will hear from us once each year.</p>
+    <div class="fade">
+      <form id="reg-form" onsubmit="handleSubmit(event)">
+        <div class="form-row">
+          <input type="email" id="email-input" class="email-input" placeholder="Your address" autocomplete="email" required>
+          <button type="submit" class="submit-btn">Register</button>
+        </div>
+      </form>
+      <p class="form-note">Your address is held privately and never shared.</p>
+      <p class="success-msg" id="success-msg" hidden>Your correspondence has been received. We will be in touch in due course.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="footer-mark">AURUM</span>
+  <span class="footer-copy">© MMXXIV Aurum Parfums, Grasse</span>
+</footer>
+
+<script>
+  function resizeCanvas(canvas) {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = Math.floor(rect.width * dpr);
+    canvas.height = Math.floor(rect.height * dpr);
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    return { ctx, w: rect.width, h: rect.height };
+  }
+
+  function overlayNoise(ctx, w, h, alpha) {
+    const dpr = window.devicePixelRatio || 1;
+    const pw = Math.floor(w * dpr);
+    const ph = Math.floor(h * dpr);
+    const img = ctx.createImageData(pw, ph);
+    for (let i = 0; i < img.data.length; i += 4) {
+      const v = (Math.random() * 255) | 0;
+      img.data[i] = img.data[i+1] = img.data[i+2] = v;
+      img.data[i+3] = (Math.random() * alpha) | 0;
+    }
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.putImageData(img, 0, 0);
+    ctx.restore();
+  }
+
+  /* Painting 1: Golden jasmine field at dawn */
+  function drawP1() {
+    const canvas = document.getElementById('p1');
+    const { ctx, w, h } = resizeCanvas(canvas);
+
+    const sky = ctx.createLinearGradient(0, 0, 0, h * 0.55);
+    sky.addColorStop(0, '#0b0905');
+    sky.addColorStop(0.7, '#221508');
+    sky.addColorStop(1, '#4e3310');
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, w, h);
+
+    const grd = ctx.createLinearGradient(0, h * 0.5, 0, h);
+    grd.addColorStop(0, '#5c3f0e');
+    grd.addColorStop(0.6, '#3a2608');
+    grd.addColorStop(1, '#0d0b05');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, h * 0.5, w, h * 0.5);
+
+    const sunGlow = ctx.createRadialGradient(w * 0.55, h * 0.5, 0, w * 0.55, h * 0.5, w * 0.55);
+    sunGlow.addColorStop(0, 'rgba(215,148,28,0.6)');
+    sunGlow.addColorStop(0.3, 'rgba(160,88,10,0.28)');
+    sunGlow.addColorStop(0.7, 'rgba(80,40,5,0.08)');
+    sunGlow.addColorStop(1, 'transparent');
+    ctx.fillStyle = sunGlow;
+    ctx.fillRect(0, 0, w, h);
+
+    const glow2 = ctx.createRadialGradient(w * 0.18, h * 0.58, 0, w * 0.18, h * 0.58, w * 0.32);
+    glow2.addColorStop(0, 'rgba(180,118,18,0.25)');
+    glow2.addColorStop(1, 'transparent');
+    ctx.fillStyle = glow2;
+    ctx.fillRect(0, 0, w, h);
+
+    for (let i = 0; i < 400; i++) {
+      const x = Math.random() * w;
+      const yBase = h * 0.48 + Math.random() * h * 0.5;
+      const perspY = Math.max(0, (yBase - h * 0.48) / (h * 0.52));
+      const size = (Math.random() * 2.2 + 0.4) * perspY + 0.3;
+      const r = ((185 + (Math.random() * 60)) | 0);
+      const g = ((110 + (Math.random() * 55)) | 0);
+      const b = ((15 + (Math.random() * 35)) | 0);
+      ctx.beginPath();
+      ctx.arc(x, yBase, size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${r},${g},${b},${Math.random() * 0.55 + 0.08})`;
+      ctx.fill();
+    }
+
+    const vig = ctx.createRadialGradient(w/2, h/2, h * 0.18, w/2, h/2, h * 0.88);
+    vig.addColorStop(0, 'transparent');
+    vig.addColorStop(1, 'rgba(4,3,2,0.72)');
+    ctx.fillStyle = vig;
+    ctx.fillRect(0, 0, w, h);
+
+    overlayNoise(ctx, w, h, 18);
+  }
+
+  /* Painting 2: Warm amber light of the distillation atelier */
+  function drawP2() {
+    const canvas = document.getElementById('p2');
+    const { ctx, w, h } = resizeCanvas(canvas);
+
+    const base = ctx.createLinearGradient(0, 0, w * 0.8, h);
+    base.addColorStop(0, '#100905');
+    base.addColorStop(0.5, '#1c1008');
+    base.addColorStop(1, '#0b0705');
+    ctx.fillStyle = base;
+    ctx.fillRect(0, 0, w, h);
+
+    const flask = ctx.createRadialGradient(w * 0.5, h * 0.42, 0, w * 0.5, h * 0.42, w * 0.3);
+    flask.addColorStop(0, 'rgba(222,132,30,0.72)');
+    flask.addColorStop(0.25, 'rgba(185,82,14,0.38)');
+    flask.addColorStop(0.65, 'rgba(100,38,5,0.12)');
+    flask.addColorStop(1, 'transparent');
+    ctx.fillStyle = flask;
+    ctx.fillRect(0, 0, w, h);
+
+    const warm = ctx.createRadialGradient(w * 0.32, h * 0.62, 0, w * 0.32, h * 0.62, w * 0.42);
+    warm.addColorStop(0, 'rgba(145,40,18,0.32)');
+    warm.addColorStop(1, 'transparent');
+    ctx.fillStyle = warm;
+    ctx.fillRect(0, 0, w, h);
+
+    const cool = ctx.createRadialGradient(w * 0.82, h * 0.18, 0, w * 0.82, h * 0.18, w * 0.38);
+    cool.addColorStop(0, 'rgba(55,68,88,0.22)');
+    cool.addColorStop(1, 'transparent');
+    ctx.fillStyle = cool;
+    ctx.fillRect(0, 0, w, h);
+
+    for (let i = 0; i < 90; i++) {
+      const x = w * 0.28 + Math.random() * w * 0.44;
+      const y = h * 0.18 + Math.random() * h * 0.52;
+      const r = Math.random() * 1.4 + 0.2;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(230,158,55,${Math.random() * 0.38 + 0.04})`;
+      ctx.fill();
+    }
+
+    const vig = ctx.createRadialGradient(w * 0.5, h * 0.42, h * 0.08, w * 0.5, h * 0.42, h * 0.82);
+    vig.addColorStop(0, 'transparent');
+    vig.addColorStop(1, 'rgba(3,2,1,0.78)');
+    ctx.fillStyle = vig;
+    ctx.fillRect(0, 0, w, h);
+
+    overlayNoise(ctx, w, h, 20);
+  }
+
+  /* Painting 3: Moonlit night garden */
+  function drawP3() {
+    const canvas = document.getElementById('p3');
+    const { ctx, w, h } = resizeCanvas(canvas);
+
+    const base = ctx.createLinearGradient(0, 0, 0, h);
+    base.addColorStop(0, '#05060e');
+    base.addColorStop(0.55, '#07091200');
+    base.addColorStop(1, '#030408');
+    ctx.fillStyle = '#06070e';
+    ctx.fillRect(0, 0, w, h);
+
+    const moon = ctx.createRadialGradient(w * 0.7, h * 0.14, 0, w * 0.7, h * 0.14, w * 0.58);
+    moon.addColorStop(0, 'rgba(198,208,228,0.38)');
+    moon.addColorStop(0.22, 'rgba(148,158,188,0.16)');
+    moon.addColorStop(0.58, 'rgba(78,88,118,0.05)');
+    moon.addColorStop(1, 'transparent');
+    ctx.fillStyle = moon;
+    ctx.fillRect(0, 0, w, h);
+
+    const purple = ctx.createRadialGradient(w * 0.38, h * 0.62, 0, w * 0.38, h * 0.62, w * 0.48);
+    purple.addColorStop(0, 'rgba(78,38,98,0.32)');
+    purple.addColorStop(0.5, 'rgba(40,18,58,0.12)');
+    purple.addColorStop(1, 'transparent');
+    ctx.fillStyle = purple;
+    ctx.fillRect(0, 0, w, h);
+
+    const lantern = ctx.createRadialGradient(w * 0.12, h * 0.85, 0, w * 0.12, h * 0.85, w * 0.28);
+    lantern.addColorStop(0, 'rgba(158,98,18,0.24)');
+    lantern.addColorStop(1, 'transparent');
+    ctx.fillStyle = lantern;
+    ctx.fillRect(0, 0, w, h);
+
+    for (let i = 0; i < 130; i++) {
+      const x = Math.random() * w;
+      const y = Math.random() * h * 0.52;
+      const r = Math.random() * 0.75 + 0.1;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(225,232,252,${Math.random() * 0.65 + 0.08})`;
+      ctx.fill();
+    }
+
+    for (let i = 0; i < 100; i++) {
+      const x = Math.random() * w;
+      const y = h * 0.38 + Math.random() * h * 0.58;
+      const lit = Math.random() > 0.65;
+      const size = Math.random() * 2.8 + 0.8;
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      if (lit) {
+        ctx.fillStyle = `rgba(228,222,205,${Math.random() * 0.45 + 0.08})`;
+      } else {
+        ctx.fillStyle = `rgba(78,58,98,${Math.random() * 0.38 + 0.05})`;
+      }
+      ctx.fill();
+    }
+
+    const vig = ctx.createRadialGradient(w/2, h/2, h * 0.12, w/2, h/2, h * 0.92);
+    vig.addColorStop(0, 'transparent');
+    vig.addColorStop(1, 'rgba(2,2,5,0.82)');
+    ctx.fillStyle = vig;
+    ctx.fillRect(0, 0, w, h);
+
+    overlayNoise(ctx, w, h, 14);
+  }
+
+  function initPaintings() { drawP1(); drawP2(); drawP3(); }
+
+  let rszTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(rszTimer);
+    rszTimer = setTimeout(initPaintings, 160);
+  });
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade').forEach(el => observer.observe(el));
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    const input = document.getElementById('email-input');
+    const msg = document.getElementById('success-msg');
+    if (input.value) {
+      input.value = '';
+      document.getElementById('reg-form').hidden = true;
+      msg.hidden = false;
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPaintings);
+  } else {
+    initPaintings();
+  }
+</script>

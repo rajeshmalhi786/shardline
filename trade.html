@@ -1,0 +1,1090 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trade &mdash; Shardline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:inherit}
+:root{
+  --bg:#0D0D0D;--bg-1:#141414;--bg-2:#1C1C1C;--bg-3:#222222;
+  --border:#222222;--border2:#2E2E2E;
+  --accent:#C8FF00;--text:#FFFFFF;--text-2:#999999;--text-3:#555555;
+}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;}
+
+/* Nav */
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:100;background:rgba(13,13,13,0.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding-inline:max(20px,calc(50% - 580px));}
+.nav-inner{display:flex;align-items:center;height:52px;}
+.nav-logo{display:flex;align-items:center;gap:8px;font-size:0.9rem;font-weight:600;letter-spacing:-0.01em;margin-right:28px;flex-shrink:0;}
+.logo-icon{width:28px;height:28px;background:var(--accent);border-radius:7px;display:grid;place-items:center;flex-shrink:0;}
+.nav-links{display:flex;align-items:center;gap:2px;list-style:none;}
+.nav-links a{color:var(--text-2);font-size:0.82rem;padding:5px 12px;border-radius:6px;transition:color .12s,background .12s;}
+.nav-links a:hover{color:var(--text);background:var(--bg-2);}
+.nav-links a.active{color:var(--text);border-bottom:2px solid var(--text);border-radius:0;padding-bottom:3px;}
+.nav-right{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.arc-badge{display:flex;align-items:center;gap:6px;font-size:0.68rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-2);border:1px solid var(--border2);padding:4px 10px;border-radius:20px;}
+.arc-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+.nav-x{color:var(--text-3);display:grid;place-items:center;padding:4px;transition:color .12s;border:none;background:none;}
+.nav-x:hover{color:var(--text);}
+.btn-launch{background:var(--accent);color:#000;padding:7px 16px;border-radius:8px;font-size:0.8rem;font-weight:700;transition:opacity .12s;border:none;}
+.btn-launch:hover{opacity:0.86;}
+
+/* Page header */
+.page-header{padding:52px max(20px,calc(50% - 580px)) 44px;border-bottom:1px solid var(--border);}
+.sec-eyebrow{display:flex;align-items:center;gap:10px;font-size:0.68rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;}
+.sec-eyebrow::before{content:'\2014';}
+.page-h1{font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:800;letter-spacing:-0.04em;line-height:1.08;margin-bottom:10px;}
+.page-sub{font-size:0.875rem;color:var(--text-2);line-height:1.7;max-width:500px;}
+
+/* Main grid */
+.trade-wrap{padding:36px max(20px,calc(50% - 580px)) 0;}
+.trade-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;}
+
+/* Swap card */
+.swap-card{background:var(--bg-1);border:1px solid var(--border2);border-radius:16px;overflow:visible;}
+.swap-top{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 0;}
+.swap-tabs{display:flex;gap:3px;background:var(--bg-2);border-radius:8px;padding:3px;}
+.swap-tab{background:none;border:none;color:var(--text-3);font-size:0.82rem;font-weight:600;padding:5px 16px;border-radius:6px;transition:background .15s,color .15s;}
+.swap-tab.active{background:#fff;color:#000;}
+.arc-sm{display:flex;align-items:center;gap:5px;font-size:0.65rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3);}
+.arc-sm-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+.swap-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px;}
+
+/* Fields */
+.swap-field{background:var(--bg-2);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;}
+.field-label-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.field-label{font-size:0.65rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-3);}
+.live-badge{font-size:0.62rem;font-weight:600;color:var(--accent);background:rgba(200,255,0,0.08);border:1px solid rgba(200,255,0,0.2);padding:2px 7px;border-radius:4px;}
+.field-row{display:flex;align-items:center;gap:10px;}
+.swap-input{flex:1;background:none;border:none;outline:none;font-size:1.5rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;letter-spacing:-0.02em;width:0;}
+.swap-input::placeholder{color:var(--text-3);}
+.out-val{flex:1;font-size:1.5rem;font-weight:700;letter-spacing:-0.02em;font-family:'JetBrains Mono',monospace;}
+
+/* tUSD pill */
+.tusd-pill{display:flex;align-items:center;gap:6px;background:var(--bg-3);border:1px solid var(--border2);border-radius:8px;padding:6px 10px;flex-shrink:0;font-size:0.82rem;font-weight:600;}
+.tusd-icon{width:20px;height:20px;border-radius:6px;background:var(--accent);display:grid;place-items:center;font-size:0.5rem;font-weight:800;color:#000;flex-shrink:0;}
+
+/* Token selector */
+.tok-selector{display:flex;align-items:center;gap:6px;background:var(--bg-3);border:1px solid var(--border2);border-radius:8px;padding:6px 10px;flex-shrink:0;font-size:0.82rem;font-weight:600;position:relative;cursor:pointer;user-select:none;}
+.tok-selector:hover{border-color:var(--text-3);}
+.tok-avatar-sm{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;font-size:0.5rem;font-weight:800;color:#fff;flex-shrink:0;}
+.tok-chevron{color:var(--text-3);font-size:0.7rem;margin-left:2px;}
+.tok-dropdown{display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--bg-2);border:1px solid var(--border2);border-radius:10px;padding:6px;z-index:50;width:180px;}
+.tok-dropdown.open{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+.tok-opt{display:flex;align-items:center;gap:7px;padding:7px 9px;border-radius:7px;cursor:pointer;font-size:0.78rem;font-weight:500;transition:background .1s;}
+.tok-opt:hover{background:var(--bg-3);}
+
+/* Direction button */
+.dir-btn{align-self:center;width:34px;height:34px;border-radius:9px;background:var(--bg-2);border:1px solid var(--border2);color:var(--text-3);font-size:1rem;display:grid;place-items:center;transition:color .12s,border-color .12s;margin:-4px auto;}
+.dir-btn:hover{color:var(--text);border-color:var(--text-3);}
+
+/* Summary */
+.swap-summary{display:flex;flex-direction:column;gap:5px;padding:2px 0;}
+.sum-row{display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;}
+.sum-label{color:var(--text-3);}
+.sum-val{font-family:'JetBrains Mono',monospace;color:var(--text-2);font-size:0.73rem;}
+.sum-val.lime{color:var(--accent);}
+
+/* Slippage */
+.slip-row{display:flex;align-items:center;justify-content:space-between;}
+.slip-label{font-size:0.72rem;color:var(--text-3);}
+.slip-btns{display:flex;gap:4px;}
+.slip-btn{background:none;border:1px solid var(--border2);color:var(--text-3);padding:4px 10px;border-radius:20px;font-size:0.7rem;font-weight:500;transition:all .12s;}
+.slip-btn.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700;}
+.slip-btn:not(.active):hover{border-color:var(--text-3);color:var(--text);}
+
+/* Wallet buttons */
+.wallet-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.btn-wallet{padding:11px 14px;border-radius:10px;border:none;font-size:0.82rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .12s;}
+.btn-phantom{background:#4C1D95;color:#fff;}
+.btn-phantom:hover{opacity:0.85;}
+.btn-meta{background:#E97B27;color:#fff;}
+.btn-meta:hover{opacity:0.85;}
+
+/* Shard map card */
+.shard-card{background:var(--bg-1);border:1px solid var(--border2);border-radius:16px;padding:20px 20px 16px;}
+.shard-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.shard-title{font-size:0.85rem;font-weight:700;}
+.shard-pool-count{font-size:0.65rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-3);}
+
+/* Shard visualization */
+.shard-vis{position:relative;height:190px;margin-bottom:16px;}
+.shard-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;}
+@keyframes flowPath{from{stroke-dashoffset:0}to{stroke-dashoffset:-20}}
+
+/* IN circle */
+.sv-in{position:absolute;left:0;top:50%;transform:translateY(-50%);z-index:2;
+  width:52px;height:52px;border-radius:50%;background:var(--accent);color:#000;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.7rem;font-weight:800;letter-spacing:0.06em;}
+
+/* Right pool stack */
+.sv-pools{position:absolute;right:0;top:0;bottom:0;display:flex;flex-direction:column;justify-content:space-between;width:200px;z-index:2;}
+.sv-pool{display:flex;align-items:center;gap:10px;background:var(--bg-2);
+  border:1px solid var(--border2);border-radius:10px;padding:10px 13px;
+  transition:border-color .3s,box-shadow .3s;}
+.sv-pool.active{border-color:var(--pc,var(--border2));box-shadow:0 0 0 1px color-mix(in srgb,var(--pc,transparent) 25%,transparent);}
+.svp-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--pc,var(--text-3));
+  opacity:0.3;transition:opacity .3s;}
+.sv-pool.active .svp-dot{opacity:1;}
+.svp-info{flex:1;}
+.svp-name{font-size:0.78rem;font-weight:700;line-height:1.2;}
+.svp-fee{font-size:0.6rem;color:var(--text-3);}
+.svp-pct{font-family:'JetBrains Mono',monospace;font-size:0.78rem;font-weight:700;
+  color:var(--text-3);min-width:32px;text-align:right;transition:color .25s;}
+
+.shard-foot{font-size:0.72rem;color:var(--text-3);line-height:1.65;border-top:1px solid var(--border);padding-top:14px;}
+
+/* Step cards */
+.step-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
+.step-mini{background:var(--bg-1);border:1px solid var(--border2);border-radius:12px;padding:18px 20px;}
+.step-mini-ey{font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:7px;}
+.step-mini-title{font-size:0.88rem;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px;}
+.step-mini-desc{font-size:0.78rem;color:var(--text-3);}
+
+/* Feature cards */
+.feat-section{padding:36px max(20px,calc(50% - 580px)) 0;}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.feat-card{background:var(--bg-1);border:1px solid var(--border2);border-radius:12px;padding:22px 20px;}
+.feat-title{font-size:0.88rem;font-weight:700;margin-bottom:8px;}
+.feat-desc{font-size:0.78rem;color:var(--text-2);line-height:1.7;}
+
+/* Footer */
+footer{margin-top:64px;padding-block:52px 0;padding-inline:max(20px,calc(50% - 580px));border-top:1px solid var(--border);position:relative;overflow:hidden;}
+.footer-top{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:40px;padding-bottom:44px;}
+.footer-logo{display:flex;align-items:center;gap:8px;font-size:0.88rem;font-weight:600;margin-bottom:10px;}
+.footer-blurb{font-size:0.78rem;color:var(--text-2);line-height:1.65;max-width:230px;margin-bottom:16px;}
+.footer-social{display:inline-flex;align-items:center;gap:7px;font-size:0.78rem;color:var(--text-2);transition:color .12s;margin-bottom:10px;}
+.footer-social:hover{color:var(--text);}
+.footer-ca-box{display:inline-flex;align-items:center;gap:7px;background:var(--bg-1);border:1px solid var(--border2);border-radius:8px;padding:6px 8px;font-family:'JetBrains Mono',monospace;font-size:0.62rem;max-width:260px;}
+.fca-label{color:var(--text-3);font-weight:600;flex-shrink:0;}
+.fca-val{color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;}
+.fca-copy{background:var(--accent);border:none;color:#000;padding:3px 8px;border-radius:4px;font-size:0.62rem;font-family:'JetBrains Mono',monospace;font-weight:700;cursor:pointer;flex-shrink:0;}
+.footer-col-h{font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:14px;}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:9px;}
+.footer-links a{font-size:0.8rem;color:var(--text-2);transition:color .12s;}
+.footer-links a:hover{color:var(--text);}
+.footer-bottom{border-top:1px solid var(--border);padding-block:14px;display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-3);gap:12px;flex-wrap:wrap;position:relative;z-index:1;}
+.footer-watermark{position:absolute;bottom:-0.1em;left:max(20px,calc(50% - 580px));right:0;font-size:clamp(80px,18vw,200px);font-weight:800;letter-spacing:-0.05em;color:rgba(255,255,255,0.032);pointer-events:none;line-height:1;white-space:nowrap;user-select:none;}
+
+/* Toast */
+#_toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-2);border:1px solid var(--border2);padding:10px 18px;border-radius:8px;font-size:0.8rem;pointer-events:none;opacity:0;transition:opacity .2s;z-index:9999;white-space:nowrap;}
+
+@media(max-width:900px){
+  .trade-grid,.step-cards,.feat-grid{grid-template-columns:1fr;}
+  .footer-top{grid-template-columns:1fr 1fr;gap:26px;}
+  .nav-links{display:none;}
+}
+@media(max-width:560px){.footer-top{grid-template-columns:1fr;}}
+
+/* Animations */
+@keyframes fadeSlideUp   { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeSlideLeft { from{opacity:0;transform:translateX(-28px)} to{opacity:1;transform:translateX(0)} }
+@keyframes fadeSlideRight{ from{opacity:0;transform:translateX(28px)} to{opacity:1;transform:translateX(0)} }
+@keyframes shimmer { 0%{opacity:1} 50%{opacity:0.4} 100%{opacity:1} }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(200,255,0,0.15)} 50%{box-shadow:0 0 0 6px rgba(200,255,0,0)} }
+@keyframes countBlink { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+.anim-fade  { opacity:0; transform:translateY(24px); transition:opacity 0.5s ease, transform 0.5s ease; }
+.anim-left  { opacity:0; transform:translateX(-28px); transition:opacity 0.5s ease, transform 0.5s ease; }
+.anim-right { opacity:0; transform:translateX(28px);  transition:opacity 0.5s ease, transform 0.5s ease; }
+.anim-fade.visible,.anim-left.visible,.anim-right.visible { opacity:1; transform:none; }
+.d1{transition-delay:0.07s}.d2{transition-delay:0.14s}.d3{transition-delay:0.21s}.d4{transition-delay:0.28s}.d5{transition-delay:0.35s}
+
+/* Page header entrance (immediate) */
+.page-h1 { animation: fadeSlideUp 0.55s ease 0.1s both; }
+.page-sub { animation: fadeSlideUp 0.55s ease 0.2s both; }
+.sec-eyebrow { animation: fadeSlideUp 0.45s ease 0.05s both; }
+
+/* Hover lifts */
+.step-mini { transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+.step-mini:hover { transform:translateY(-3px); border-color:var(--border2); box-shadow:0 8px 24px rgba(0,0,0,0.35); }
+.feat-card { transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+.feat-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,0.35); }
+.shard-pool { transition: transform 0.18s ease, border-color 0.2s ease; }
+.shard-pool:hover { transform:translateX(2px); }
+
+/* Live badge pulse */
+.live-badge { animation: pulse 2.5s ease infinite; }
+
+/* Updating shimmer on output value */
+.out-val.updating { animation: shimmer 0.6s ease; }
+
+/* Wallet button hover */
+.btn-wallet { transition: opacity 0.15s ease, transform 0.15s ease; }
+.btn-wallet:hover { transform: scale(1.02); }
+
+/* Swap card + shard map slide in on load */
+.swap-card { animation: fadeSlideLeft 0.55s ease 0.25s both; }
+.shard-card { animation: fadeSlideRight 0.55s ease 0.35s both; }
+
+/* Action button (Approve / Swap) */
+.btn-action {
+  width:100%; padding:14px; border-radius:50px; border:none;
+  font-size:0.95rem; font-weight:700; cursor:pointer;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.15s ease, opacity 0.15s ease;
+}
+.btn-action:hover { transform:scale(1.02); opacity:0.92; }
+.btn-action.state-approve { background:#F0F0F0; color:#000; }
+.btn-action.state-approving { background:#E0E0E0; color:#555; cursor:wait; }
+.btn-action.state-swap { background:var(--accent); color:#000; }
+.btn-action.state-swapping { background:rgba(200,255,0,0.5); color:#000; cursor:wait; }
+.btn-action.state-done { background:#16A34A; color:#fff; }
+</style>
+</head>
+<body>
+<div id="_toast"></div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-icon">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M9 2L4 7L9 12" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      shardline
+    </a>
+    <ul class="nav-links">
+      <li><a href="trade.html" class="active">Trade</a></li>
+      <li><a href="markets.html">Markets</a></li>
+      <li><a href="how-it-works.html">How it works</a></li>
+      <li><a href="docs.html">Docs</a></li>
+    </ul>
+    <div class="nav-right">
+      <span class="arc-badge"><span class="arc-dot"></span>ARC TESTNET</span>
+      <button class="nav-x" aria-label="X">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L2.002 2.25H8.08l4.253 5.622 5.911-5.622z"/></svg>
+      </button>
+      <button class="btn-launch">Launch app</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Page header -->
+<div class="page-header">
+  <div class="sec-eyebrow">Trade</div>
+  <h1 class="page-h1">Split a swap</h1>
+  <p class="page-sub">Enter a size and watch it break across the pools on Arc Testnet &mdash; live, before you even connect.</p>
+</div>
+
+<!-- Main grid -->
+<div class="trade-wrap">
+  <div class="trade-grid">
+
+    <!-- Swap card -->
+    <div class="swap-card">
+      <div class="swap-top">
+        <div class="swap-tabs">
+          <button class="swap-tab active" id="tabBuy">Buy</button>
+          <button class="swap-tab" id="tabSell">Sell</button>
+        </div>
+        <div class="arc-sm"><span class="arc-sm-dot"></span>ARC TESTNET</div>
+      </div>
+      <div class="swap-body">
+
+        <!-- You pay -->
+        <div class="swap-field">
+          <div class="field-label" id="payLabel">You pay</div>
+          <div class="field-row">
+            <input class="swap-input" id="amtIn" type="number" value="1000" min="0" placeholder="0">
+            <!-- tUSD pill (pay direction: tUSD → token) -->
+            <div class="tusd-pill" id="payTusdPill">
+              <div class="tusd-icon">tU</div>
+              tUSD
+            </div>
+            <!-- Token pill (pay direction: token → tUSD) -->
+            <div class="tok-selector" id="payTokPill" style="display:none">
+              <div class="tok-avatar-sm" id="payTokDot" style="background:#DC2626">SP</div>
+              <span id="payTokSym">tSPY</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Direction -->
+        <button class="dir-btn" id="btnDir" style="transition:transform 0.3s ease">&#x21C5;</button>
+
+        <!-- You receive -->
+        <div class="swap-field">
+          <div class="field-label-row">
+            <span class="field-label" id="rcvLabel">You receive</span>
+            <span class="live-badge">live quote</span>
+          </div>
+          <div class="field-row">
+            <span class="out-val" id="amtOut">&#x2014;</span>
+            <!-- Token selector (receive direction: tUSD → token) -->
+            <div class="tok-selector" id="tokBtn">
+              <div class="tok-avatar-sm" id="tokDot" style="background:#DC2626">SP</div>
+              <span id="tokSym">tSPY</span>
+              <span class="tok-chevron">&#x25BE;</span>
+              <div class="tok-dropdown" id="tokDropdown"></div>
+            </div>
+            <!-- tUSD pill (receive direction: token → tUSD) -->
+            <div class="tusd-pill" id="rcvTusdPill" style="display:none">
+              <div class="tusd-icon">tU</div>
+              tUSD
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary rows -->
+        <div class="swap-summary">
+          <div class="sum-row">
+            <span class="sum-label">Guaranteed minimum</span>
+            <span class="sum-val" id="sumMin">&mdash;</span>
+          </div>
+          <div class="sum-row">
+            <span class="sum-label">Split gain</span>
+            <span class="sum-val lime" id="sumGain">&mdash;</span>
+          </div>
+        </div>
+
+        <!-- Slippage -->
+        <div class="slip-row">
+          <span class="slip-label">Max slippage</span>
+          <div class="slip-btns">
+            <button class="slip-btn" data-slip="0.1">0.1%</button>
+            <button class="slip-btn active" data-slip="0.5">0.5%</button>
+            <button class="slip-btn" data-slip="1">1%</button>
+          </div>
+        </div>
+
+        <!-- Wallet buttons (shown when not connected) -->
+        <div class="wallet-row" id="walletRow">
+          <button class="btn-wallet btn-phantom" id="btnPhantom">&#x1F47B; Phantom</button>
+          <button class="btn-wallet btn-meta" id="btnMeta">&#x1F98A; MetaMask</button>
+        </div>
+
+        <!-- Action button (shown after connect) -->
+        <button class="btn-action" id="btnAction" style="display:none"></button>
+
+      </div>
+    </div>
+
+    <!-- Shard map -->
+    <div class="shard-card">
+      <div class="shard-card-top">
+        <span class="shard-title">Shard map</span>
+        <span class="shard-pool-count" id="poolCount">0 OF 3 POOLS</span>
+      </div>
+
+      <div class="shard-vis" id="shardVis">
+        <!-- IN circle -->
+        <div class="sv-in" id="svIn">IN</div>
+        <!-- Bezier flow lines -->
+        <svg class="shard-svg" id="shardSvg" fill="none"></svg>
+        <!-- Pool cards (right) -->
+        <div class="sv-pools" id="svPools">
+          <div class="sv-pool" id="svpDeep" style="--pc:#C8FF00">
+            <span class="svp-dot"></span>
+            <div class="svp-info"><div class="svp-name">Deep</div><div class="svp-fee">5 bps fee</div></div>
+            <span class="svp-pct" id="svPctDeep">—</span>
+          </div>
+          <div class="sv-pool" id="svpCore" style="--pc:#10B981">
+            <span class="svp-dot"></span>
+            <div class="svp-info"><div class="svp-name">Core</div><div class="svp-fee">30 bps fee</div></div>
+            <span class="svp-pct" id="svPctCore">—</span>
+          </div>
+          <div class="sv-pool" id="svpThin" style="--pc:#8B5CF6">
+            <span class="svp-dot"></span>
+            <div class="svp-info"><div class="svp-name">Thin</div><div class="svp-fee">100 bps fee</div></div>
+            <span class="svp-pct" id="svPctThin">—</span>
+          </div>
+        </div>
+      </div>
+
+      <p class="shard-foot">Priced from live pool reserves every 12 seconds. The router holds the whole route to the guaranteed minimum &mdash; if it cannot be met, nothing moves.</p>
+    </div>
+
+  </div>
+
+  <!-- Step mini-cards -->
+  <div class="step-cards">
+    <a href="https://faucet.circle.com" target="_blank" rel="noopener" class="step-mini anim-fade d1" style="cursor:pointer;display:block">
+      <div class="step-mini-ey">Step 1 &middot; Gas</div>
+      <div class="step-mini-title">
+        Get testnet USDC
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none" style="flex-shrink:0"><path d="M2 10L10 2M10 2H5M10 2V7" stroke="#C8FF00" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="step-mini-desc">Arc pays fees in USDC.</div>
+    </a>
+    <div class="step-mini anim-fade d2" style="cursor:pointer" id="mintCard">
+      <div class="step-mini-ey">Step 2 &middot; Test funds</div>
+      <div class="step-mini-title" id="mintTitle">Mint 1,000,000 tUSD</div>
+      <div class="step-mini-desc" id="mintDesc">Connect a wallet first.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Feature cards -->
+<div class="feat-section" style="padding-bottom:0">
+  <div class="feat-grid">
+    <div class="feat-card anim-fade d1">
+      <div class="feat-title">One approval</div>
+      <p class="feat-desc">You approve the router and nothing else. It holds your tokens for the length of one transaction and keeps no balance between calls.</p>
+    </div>
+    <div class="feat-card anim-fade d2">
+      <div class="feat-title">One minimum</div>
+      <p class="feat-desc">The floor covers the whole route, not each leg. If the split cannot clear it, the transaction reverts and you keep your tokens.</p>
+    </div>
+    <div class="feat-card anim-fade d3">
+      <div class="feat-title">USDC for gas</div>
+      <p class="feat-desc">Arc charges fees in USDC. Top up from the Circle faucet if your wallet shows no gas balance.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">
+        <div class="logo-icon">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M9 2L4 7L9 12" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        shardline
+      </div>
+      <p class="footer-blurb">Split-routed swaps on Arc Testnet. One order in, the best split out, settled in a single transaction.</p>
+      <a href="#" class="footer-social">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L2.002 2.25H8.08l4.253 5.622 5.911-5.622z"/></svg>
+        Follow @ShardlineHq
+      </a><br>
+      <div class="footer-ca-box" style="margin-top:10px">
+        <span class="fca-label">CA</span>
+        <span class="fca-val">0x18d0d3d0ce27f059804d08bd17179a0ec30e5f26</span>
+        <button class="fca-copy" id="fcaCopy">Copy</button>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-h">Product</div>
+      <ul class="footer-links">
+        <li><a href="trade.html">Trade</a></li>
+        <li><a href="markets.html">Markets</a></li>
+        <li><a href="how-it-works.html">How it works</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-h">Build</div>
+      <ul class="footer-links">
+        <li><a href="docs.html">Docs &amp; API</a></li>
+        <li><a href="http://localhost:8080/api/markets" target="_blank">Markets (JSON)</a></li>
+        <li><a href="http://localhost:8080/api/health" target="_blank">Health check</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-h">Arc</div>
+      <ul class="footer-links">
+        <li><a href="https://faucet.circle.com" target="_blank">USDC faucet</a></li>
+        <li><a href="https://testnet.arcscan.app" target="_blank">ArcScan</a></li>
+        <li><a href="https://docs.arc.network" target="_blank">Arc docs</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>Arc Testnet &middot; chain 5042002</span>
+    <span>Testnet only. Tokens here have no value.</span>
+  </div>
+  <div class="footer-watermark" aria-hidden="true">shardline</div>
+</footer>
+
+<script>
+const API = window.location.origin;
+const ARC_CHAIN_ID = '0x4CEF52';
+
+const ALL_TOKENS = [
+  {sym:'tSPY', abbr:'SP', color:'#DC2626'},
+  {sym:'tQQQ', abbr:'Q',  color:'#2563EB'},
+  {sym:'tNVDA',abbr:'NV', color:'#16A34A'},
+  {sym:'tAAPL',abbr:'A',  color:'#6B7280'},
+  {sym:'tTSLA',abbr:'T',  color:'#EF4444'},
+  {sym:'tMSFT',abbr:'MS', color:'#3B82F6'},
+  {sym:'tAMZN',abbr:'AZ', color:'#374151'},
+  {sym:'tCOIN',abbr:'CB', color:'#1D4ED8'},
+];
+
+let currentTok = ALL_TOKENS[0];
+let slippage = 0.5;
+let quoteTimer = null;
+let direction = 'tUSD_to_tok'; // 'tUSD_to_tok' or 'tok_to_tUSD'
+
+function showToast(msg) {
+  const t = document.getElementById('_toast');
+  t.textContent = msg;
+  t.style.opacity = '1';
+  setTimeout(() => { t.style.opacity = '0'; }, 2800);
+}
+
+/* Token dropdown */
+function renderDropdown() {
+  const dd = document.getElementById('tokDropdown');
+  dd.innerHTML = ALL_TOKENS.map(t =>
+    '<div class="tok-opt" data-sym="' + t.sym + '">' +
+    '<div style="width:18px;height:18px;border-radius:5px;background:' + t.color + ';display:grid;place-items:center;font-size:0.48rem;font-weight:800;color:#fff;flex-shrink:0">' + t.abbr + '</div>' +
+    '<span>' + t.sym + '</span></div>'
+  ).join('');
+  dd.querySelectorAll('.tok-opt').forEach(function(el) {
+    el.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var tok = ALL_TOKENS.find(function(t) { return t.sym === el.dataset.sym; });
+      if (tok) setToken(tok);
+      dd.classList.remove('open');
+    });
+  });
+}
+
+function setToken(tok) {
+  currentTok = tok;
+  document.getElementById('tokDot').style.background = tok.color;
+  document.getElementById('tokDot').textContent = tok.abbr;
+  document.getElementById('tokSym').textContent = tok.sym;
+  // Keep payTokPill in sync for reversed direction
+  document.getElementById('payTokDot').style.background = tok.color;
+  document.getElementById('payTokDot').textContent = tok.abbr;
+  document.getElementById('payTokSym').textContent = tok.sym;
+  fetchQuote();
+}
+
+document.getElementById('tokBtn').addEventListener('click', function(e) {
+  e.stopPropagation();
+  document.getElementById('tokDropdown').classList.toggle('open');
+});
+document.addEventListener('click', function() {
+  document.getElementById('tokDropdown').classList.remove('open');
+});
+
+/* Slippage */
+document.querySelectorAll('.slip-btn').forEach(function(b) {
+  b.addEventListener('click', function() {
+    document.querySelectorAll('.slip-btn').forEach(function(x) { x.classList.remove('active'); });
+    b.classList.add('active');
+    slippage = parseFloat(b.dataset.slip);
+    fetchQuote();
+  });
+});
+
+/* Tabs */
+document.getElementById('tabBuy').addEventListener('click', function() {
+  document.getElementById('tabBuy').classList.add('active');
+  document.getElementById('tabSell').classList.remove('active');
+});
+document.getElementById('tabSell').addEventListener('click', function() {
+  document.getElementById('tabSell').classList.add('active');
+  document.getElementById('tabBuy').classList.remove('active');
+});
+document.getElementById('btnDir').addEventListener('click', function() {
+  direction = direction === 'tUSD_to_tok' ? 'tok_to_tUSD' : 'tUSD_to_tok';
+
+  // Animate the button
+  var btn = document.getElementById('btnDir');
+  btn.style.transform = 'rotate(180deg)';
+  setTimeout(function(){ btn.style.transform = ''; }, 300);
+
+  if (direction === 'tUSD_to_tok') {
+    // Pay tUSD, receive token
+    document.getElementById('payTusdPill').style.display = '';
+    document.getElementById('payTokPill').style.display = 'none';
+    document.getElementById('tokBtn').style.display = '';
+    document.getElementById('rcvTusdPill').style.display = 'none';
+    document.getElementById('payLabel').textContent = 'You pay';
+    document.getElementById('rcvLabel').textContent = 'You receive';
+  } else {
+    // Pay token, receive tUSD
+    document.getElementById('payTusdPill').style.display = 'none';
+    document.getElementById('payTokPill').style.display = '';
+    document.getElementById('tokBtn').style.display = 'none';
+    document.getElementById('rcvTusdPill').style.display = '';
+    document.getElementById('payLabel').textContent = 'You pay';
+    document.getElementById('rcvLabel').textContent = 'You receive';
+    // Sync payTokPill with selected token
+    document.getElementById('payTokDot').style.background = currentTok.color;
+    document.getElementById('payTokDot').textContent = currentTok.abbr;
+    document.getElementById('payTokSym').textContent = currentTok.sym;
+  }
+
+  document.getElementById('amtOut').textContent = '—';
+  document.getElementById('sumMin').textContent = '—';
+  document.getElementById('sumGain').textContent = '—';
+  updatePools([0, 0, 0]);
+  fetchQuote();
+});
+
+/* Draw shard map lines */
+var POOL_COLORS = ['#C8FF00', '#10B981', '#8B5CF6'];
+var POOL_IDS    = ['svpDeep', 'svpCore', 'svpThin'];
+var POOL_PCT    = ['svPctDeep', 'svPctCore', 'svPctThin'];
+
+function makePath(svg, d, stroke, w, op, animate) {
+  var p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  p.setAttribute('d', d);
+  p.setAttribute('stroke', stroke);
+  p.setAttribute('stroke-width', String(w));
+  p.setAttribute('opacity', String(op));
+  p.setAttribute('fill', 'none');
+  if (animate) {
+    p.style.strokeDasharray = '10 7';
+    p.style.strokeDashoffset = '0';
+    p.style.animation = 'flowPath 1s linear infinite';
+  }
+  svg.appendChild(p);
+  return p;
+}
+
+function drawLines(shareArr) {
+  var vis   = document.getElementById('shardVis');
+  var inEl  = document.getElementById('svIn');
+  var svg   = document.getElementById('shardSvg');
+  var vr    = vis.getBoundingClientRect();
+  var ir    = inEl.getBoundingClientRect();
+
+  svg.innerHTML = '';
+  svg.setAttribute('viewBox', '0 0 ' + vr.width + ' ' + vr.height);
+
+  // Source: right edge of IN circle, vertical center
+  var sx = ir.right - vr.left;
+  var sy = ir.top + ir.height / 2 - vr.top;
+
+  POOL_IDS.forEach(function(id, i) {
+    var el    = document.getElementById(id);
+    var er    = el.getBoundingClientRect();
+    var share = shareArr[i] || 0;
+    var color = POOL_COLORS[i];
+    var active = share > 0;
+
+    // Target: left edge of pool card, vertical center
+    var ex = er.left - vr.left;
+    var ey = er.top  + er.height / 2 - vr.top;
+
+    var cx1 = sx + (ex - sx) * 0.45;
+    var cx2 = sx + (ex - sx) * 0.55;
+    var d = 'M ' + sx + ' ' + sy + ' C ' + cx1 + ' ' + sy + ' ' + cx2 + ' ' + ey + ' ' + ex + ' ' + ey;
+
+    var stroke = active ? color : '#252525';
+    var w  = active ? (share > 0.5 ? 2.5 : share > 0.2 ? 1.8 : 1.4) : 0.8;
+    var op = active ? 1 : 0.4;
+
+    makePath(svg, d, stroke, w, op, active);
+  });
+}
+
+/* Update pool badges */
+function updatePools(rawShares) {
+  var names = ['Deep', 'Core', 'Thin'];
+  var total  = rawShares.reduce(function(s, x) { return s + x; }, 0) || 1;
+  var normed = rawShares.map(function(v) { return v / total; });
+  var active = 0;
+
+  names.forEach(function(p, i) {
+    var share  = normed[i];
+    var pct    = Math.round(share * 100);
+    var poolEl = document.getElementById(POOL_IDS[i]);
+    var badge  = document.getElementById(POOL_PCT[i]);
+    if (rawShares[i] > 0) {
+      active++;
+      poolEl.classList.add('active');
+      badge.textContent = pct + '%';
+      badge.style.color = POOL_COLORS[i];
+      badge.style.fontWeight = '700';
+    } else {
+      poolEl.classList.remove('active');
+      badge.textContent = '—';
+      badge.style.color = '';
+      badge.style.fontWeight = '';
+    }
+  });
+
+  document.getElementById('poolCount').textContent = active + ' OF 3 POOLS';
+  drawLines(normed);
+}
+
+/* Balance */
+var tusdBalance = Infinity; // updated after wallet connect
+var lastQuoteShards = [];   // shard data from last /api/quote response
+
+async function fetchBalance() {
+  if (!connectedAddress || !ethersProvider) return;
+  try {
+    if (!contractsDeployed()) { tusdBalance = Infinity; checkBalance(); return; }
+    var token = new ethers.Contract(CONTRACTS.tokens.tUSD, ERC20_ABI, ethersProvider);
+    var raw = await token.balanceOf(connectedAddress);
+    tusdBalance = parseFloat(ethers.formatEther(raw));
+  } catch(e) { tusdBalance = Infinity; }
+  checkBalance();
+}
+
+function checkBalance() {
+  if (swapState === 'idle') return;
+  var amtIn = parseFloat(document.getElementById('amtIn').value) || 0;
+  var needsCheck = direction === 'tUSD_to_tok';
+  var btn = document.getElementById('btnAction');
+  if (needsCheck && amtIn > 0 && tusdBalance < amtIn) {
+    document.getElementById('amtOut').textContent = 'Not enough tUSD';
+    document.getElementById('sumMin').textContent = '—';
+    document.getElementById('sumGain').textContent = '—';
+    updatePools([0, 0, 0]);
+    btn.disabled = true;
+    btn.style.opacity = '0.45';
+    return true; // blocked
+  }
+  btn.disabled = false;
+  btn.style.opacity = '';
+  return false;
+}
+
+function fmtAmt(v) {
+  if (v >= 10000) return v.toLocaleString(undefined, {maximumFractionDigits: 0});
+  if (v >= 100)   return v.toLocaleString(undefined, {maximumFractionDigits: 2});
+  return v.toLocaleString(undefined, {minimumFractionDigits: 4, maximumFractionDigits: 4});
+}
+
+function updateVisCards(amtIn, tokenIn, amtOut, tokenOut, txCount) {
+  document.getElementById('svAmtIn').textContent  = amtIn  ? amtIn.toLocaleString()  : '—';
+  document.getElementById('svTokIn').textContent  = tokenIn  || '—';
+  document.getElementById('svAmtOut').textContent = amtOut ? fmtAmt(amtOut) : '—';
+  document.getElementById('svTokOut').textContent = amtOut ? (tokenOut + (txCount ? ' · ' + txCount + ' tx' : '')) : '—';
+}
+
+/* Quote */
+async function fetchQuote() {
+  var amtIn = parseFloat(document.getElementById('amtIn').value) || 0;
+  if (!amtIn) {
+    document.getElementById('amtOut').textContent = '—';
+    document.getElementById('sumMin').textContent = '—';
+    document.getElementById('sumGain').textContent = '—';
+    updatePools([0, 0, 0]);
+    return;
+  }
+  if (checkBalance()) return;
+  try {
+    var tokenIn  = direction === 'tUSD_to_tok' ? 'tUSD' : currentTok.sym;
+    var tokenOut = direction === 'tUSD_to_tok' ? currentTok.sym : 'tUSD';
+    var res = await fetch(API + '/api/quote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tokenIn: tokenIn, tokenOut: tokenOut, amountIn: amtIn })
+    });
+    var data = await res.json();
+    if (!data.amountOut) throw new Error('no quote');
+    var out = parseFloat(data.amountOut);
+    var minOut = out * (1 - slippage / 100);
+    var fmt = function(v) { return v.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 }); };
+    var _outEl = document.getElementById('amtOut');
+    _outEl.classList.add('updating');
+    setTimeout(function(){ _outEl.classList.remove('updating'); }, 650);
+    (function animateCount(el, target){
+      var s = performance.now(), d = 600;
+      (function step(now){
+        var p = Math.min((now-s)/d, 1), e = 1-Math.pow(1-p,3);
+        el.textContent = (target*e).toLocaleString(undefined,{minimumFractionDigits:4,maximumFractionDigits:4});
+        if(p<1) requestAnimationFrame(step); else el.textContent = fmt(out);
+      })(performance.now());
+    })(_outEl, out);
+    document.getElementById('sumMin').textContent = fmt(minOut) + ' ' + currentTok.sym;
+
+    lastQuoteShards = data.shards || [];
+    var splitArr = lastQuoteShards;
+    var usedPools = splitArr.filter(function(s) { return (s.share || 0) > 0; }).length;
+    document.getElementById('sumGain').textContent = usedPools > 1 ? 'split across ' + usedPools + ' pools' : 'one pool is best';
+
+    var deepShare = 0, coreShare = 0, thinShare = 0;
+    splitArr.forEach(function(s) {
+      var n = (s.pool || '').toLowerCase();
+      if (n.indexOf('deep') !== -1) deepShare = (s.share || 0) * amtIn;
+      else if (n.indexOf('core') !== -1) coreShare = (s.share || 0) * amtIn;
+      else if (n.indexOf('thin') !== -1) thinShare = (s.share || 0) * amtIn;
+    });
+    if (deepShare + coreShare + thinShare < 1) {
+      deepShare = amtIn * 0.52; coreShare = amtIn * 0.31; thinShare = amtIn * 0.17;
+    }
+    updatePools([deepShare, coreShare, thinShare]);
+  } catch (e) {
+    var amtFallback = parseFloat(document.getElementById('amtIn').value) || 0;
+    document.getElementById('amtOut').textContent = '—';
+    document.getElementById('sumMin').textContent = '—';
+    document.getElementById('sumGain').textContent = '—';
+    if (amtFallback > 0) updatePools([amtFallback * 0.52, amtFallback * 0.31, amtFallback * 0.17]);
+    else updatePools([0, 0, 0]);
+  }
+}
+
+document.getElementById('amtIn').addEventListener('input', function() {
+  clearTimeout(quoteTimer);
+  checkBalance();
+  quoteTimer = setTimeout(fetchQuote, 300);
+});
+
+/* ─── Contract config ────────────────────────────────────────────────────
+   Run:  cd contracts && npx hardhat node          (terminal 1)
+         npx hardhat run scripts/deploy.js --network localhost  (terminal 2)
+   Then paste the addresses from contracts/deployed.json below.          ─── */
+var CONTRACTS = {
+  chainId: '0x14a34', // Base Sepolia (84532)
+  router:  '0x08C46606Df8bd37B43b5B5B224E829D7713feE61',
+  faucet:  '0x01E80eCc557bB6872cc6Cb8A30E65a81D0c6FC57',
+  tokens: {
+    tSPY:  '0xA3ebA326011ED2740895029052F33E05775EaADF',
+    tQQQ:  '0x145e1620d7c9Add962075061fB6cafEd289fa262',
+    tNVDA: '0x82339b9f34b306f0c9FA1C7F30054bCA42bF7E7F',
+    tAAPL: '0xefc89eFf2e2eC3f8e0c1427cEB41F736A454809e',
+    tTSLA: '0x549520cafeD193b213c96c29295D12040c7Ef326',
+    tMSFT: '0x3336B9E104bfCc808f8ed29C50eC75bEb6e48595',
+    tAMZN: '0x670aA4df0b6c058d88A316095DB1A0495D3501C0',
+    tCOIN: '0xffa8f19f10363fBEbbab6C8078aD8c695EdcBDb4',
+    tUSD:  '0x1e3A65977FCe77c9F6dD82B994e75Cb2bCaBeD95',
+  },
+  pools: {
+    'SPY-A': '0x5398BC21f7aDc3759dC45c1D465d73357FAE3e57',
+    'SPY-B': '0xd800DbBbB8EC676aA0Bcd69Dfd5069C46a7a195C',
+    'SPY-C': '0xA8214b8e408E3b0228d6135D5CCAB455dDb07CfB',
+    'QQQ-A': '0x3171565156E5444df4Ce1aB7C1a49f1812050D82',
+    'QQQ-B': '0xDb12862835B3A34FeF87209eBB2F140E30755FE2',
+    'NVDA-A':'0x86fab9C0Cb16f23e49fE8F2E2CC8076c047D1567',
+    'NVDA-B':'0x9dcCea42bE4D24E9A261E9C0f468A075A31AB3Dd',
+    'NVDA-C':'0x0f7e38A319c7d0bebf1C0a23E242C545681E02D6',
+    'AAPL-A':'0xed04bF9c5321C2154F0D02524a595a1D6628241B',
+    'AAPL-B':'0x0C3F21fb1f07D0D817Fc533d4D444972421F1356',
+    'TSLA-A':'0x9808690Fa2Fc2efFA435cFE6C8a3B12BaAf2c6ca',
+    'TSLA-B':'0x99c3fE0b65d69cd55687b5bC05e1272cE9822E02',
+    'TSLA-C':'0x206a45d05b4330f3b7c070c441e3521930cbbE1E',
+    'MSFT-A':'0x02Df456282F3D3AFEa6024B9661524778FD45829',
+    'MSFT-B':'0x63481ec17FAC4A54b56756d031EB6E14Dac5f089',
+    'AMZN-A':'0x232563cB55b2306E5E2838204cF23b7AD7d56633',
+    'AMZN-B':'0x0e0DE488Be9A7277a906f8bDdAb34724946dfef9',
+    'COIN-A':'0xBEfE441b55fa990E01dEabE478dCf86490Fb512F',
+    'COIN-B':'0xC3Ce2Eb5E888292E5edD6a72da0E2f7e187D75F1',
+  },
+};
+
+var ERC20_ABI = [
+  'function balanceOf(address owner) view returns (uint256)',
+  'function approve(address spender, uint256 amount) returns (bool)',
+  'function decimals() view returns (uint8)',
+];
+var ROUTER_ABI = [
+  'function swapExactIn(address tokenIn, address tokenOut, uint256 amountIn, uint256 minAmountOut, address[] calldata pools, uint256[] calldata splits) returns (uint256 totalOut)',
+];
+var FAUCET_ABI = [
+  'function claim(address token) external',
+  'function timeUntilNextClaim(address user, address token) view returns (uint256)',
+];
+var SWAP_EXECUTED_ABI = ['event SwapExecuted(address indexed sender, address indexed tokenIn, address indexed tokenOut, uint256 amountIn, uint256 amountOut, uint256 poolCount)'];
+
+var ethersProvider = null;
+var ethersSigner   = null;
+
+function contractsDeployed() {
+  return CONTRACTS.router !== '0x0000000000000000000000000000000000000000';
+}
+
+var swapState = 'idle'; // idle | approve | swap
+
+function showApproveButton() {
+  document.getElementById('walletRow').style.display = 'none';
+  var btn = document.getElementById('btnAction');
+  btn.style.display = 'block';
+  btn.className = 'btn-action state-approve';
+  btn.textContent = 'Approve tUSD';
+  swapState = 'approve';
+}
+
+async function doApprove() {
+  var btn = document.getElementById('btnAction');
+  btn.className = 'btn-action state-approving';
+  btn.textContent = 'Approving…';
+  try {
+    if (!contractsDeployed()) { showToast('Deploy contracts first — see contracts/README'); btn.className = 'btn-action state-approve'; btn.textContent = 'Approve tUSD'; return; }
+    var tokenInSym  = direction === 'tUSD_to_tok' ? 'tUSD' : currentTok.sym;
+    var tokenInAddr = CONTRACTS.tokens[tokenInSym];
+    var token = new ethers.Contract(tokenInAddr, ERC20_ABI, ethersSigner);
+    var tx = await token.approve(CONTRACTS.router, ethers.MaxUint256);
+    showToast('Approval sent — waiting for confirmation…');
+    await tx.wait();
+    showSwapButton();
+    showToast('Approved — ready to swap!');
+  } catch(e) {
+    btn.className = 'btn-action state-approve';
+    btn.textContent = 'Approve tUSD';
+    if (e.code !== 4001 && e.code !== 'ACTION_REJECTED') showToast('Approval failed: ' + (e.shortMessage || e.message || 'error'));
+  }
+}
+
+function showSwapButton() {
+  var btn = document.getElementById('btnAction');
+  btn.className = 'btn-action state-swap';
+  btn.textContent = 'Swap';
+  swapState = 'swap';
+}
+
+async function doSwap() {
+  var amtIn = parseFloat(document.getElementById('amtIn').value) || 0;
+  if (!amtIn) { showToast('Enter an amount first'); return; }
+  if (!lastQuoteShards.length) { showToast('Fetch a quote first'); return; }
+  if (!contractsDeployed()) { showToast('Deploy contracts first — see contracts/'); return; }
+
+  var btn = document.getElementById('btnAction');
+  btn.className = 'btn-action state-swapping';
+  btn.textContent = 'Swapping…';
+
+  try {
+    var tokenInSym  = direction === 'tUSD_to_tok' ? 'tUSD' : currentTok.sym;
+    var tokenOutSym = direction === 'tUSD_to_tok' ? currentTok.sym : 'tUSD';
+    var tokenInAddr  = CONTRACTS.tokens[tokenInSym];
+    var tokenOutAddr = CONTRACTS.tokens[tokenOutSym];
+
+    // Build pools + splits arrays from last quote
+    var poolAddrs = [], splitAmts = [];
+    lastQuoteShards.forEach(function(s) {
+      var addr = CONTRACTS.pools[s.poolId];
+      if (addr && s.amountIn > 0) {
+        poolAddrs.push(addr);
+        splitAmts.push(ethers.parseEther(s.amountIn.toFixed(18)));
+      }
+    });
+    if (!poolAddrs.length) { showToast('No matching pool addresses'); return; }
+
+    var totalAmtIn = ethers.parseEther(amtIn.toFixed(18));
+    var minRaw = document.getElementById('sumMin').textContent.split(' ')[0].replace(/,/g, '');
+    var minAmtOut = (minRaw && parseFloat(minRaw) > 0) ? ethers.parseEther(parseFloat(minRaw).toFixed(18)) : 0n;
+
+    var router = new ethers.Contract(CONTRACTS.router, ROUTER_ABI, ethersSigner);
+    var tx = await router.swapExactIn(tokenInAddr, tokenOutAddr, totalAmtIn, minAmtOut, poolAddrs, splitAmts);
+    showToast('Swap submitted — waiting for confirmation…');
+    var receipt = await tx.wait();
+
+    // Parse amountOut from SwapExecuted event
+    var amountOut = 0;
+    var iface = new ethers.Interface(SWAP_EXECUTED_ABI);
+    receipt.logs.forEach(function(log) {
+      try { var p = iface.parseLog(log); if (p) amountOut = parseFloat(ethers.formatEther(p.args.amountOut)); } catch(e) {}
+    });
+
+    btn.className = 'btn-action state-done';
+    btn.textContent = 'Swap complete ✓';
+    showToast('Swapped ' + amtIn + ' ' + tokenInSym + ' → ' + amountOut.toFixed(4) + ' ' + tokenOutSym);
+    fetchBalance();
+    setTimeout(function() { showSwapButton(); }, 3000);
+  } catch(e) {
+    btn.className = 'btn-action state-swap';
+    btn.textContent = 'Swap';
+    showToast('Swap failed: ' + (e.reason || e.shortMessage || e.message || 'error').slice(0, 80));
+  }
+}
+
+document.getElementById('btnAction').addEventListener('click', function() {
+  if (swapState === 'approve') doApprove();
+  else if (swapState === 'swap') doSwap();
+});
+
+/* MetaMask */
+var connectedAddress = null;
+
+async function connectMeta() {
+  var eth = window.ethereum;
+  if (!eth) { showToast('MetaMask not detected — install it first'); return; }
+  try {
+    var accounts = await eth.request({ method: 'eth_requestAccounts' });
+    if (!accounts.length) return;
+    try {
+      await eth.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CONTRACTS.chainId }] });
+    } catch (e) {
+      if (e.code === 4902) {
+        var isLocal = CONTRACTS.chainId === '0x7a69';
+        await eth.request({ method: 'wallet_addEthereumChain', params: [{
+          chainId: CONTRACTS.chainId,
+          chainName: isLocal ? 'Hardhat Local' : 'Base Sepolia',
+          nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+          rpcUrls: [isLocal ? 'http://127.0.0.1:8545' : 'https://sepolia.base.org'],
+          blockExplorerUrls: isLocal ? [] : ['https://sepolia.basescan.org'],
+        }] });
+      }
+    }
+    connectedAddress = accounts[0];
+    ethersProvider   = new ethers.BrowserProvider(window.ethereum);
+    ethersSigner     = await ethersProvider.getSigner();
+    var short = accounts[0].slice(0, 6) + '…' + accounts[0].slice(-4);
+    document.getElementById('btnMeta').innerHTML = '&#x1F98A; ' + short;
+    document.getElementById('mintDesc').textContent = 'Click to mint 1,000,000 tUSD to your wallet.';
+    showToast('MetaMask connected — ' + short);
+    showApproveButton();
+    fetchBalance();
+  } catch (e) {
+    if (e.code !== 4001) showToast('MetaMask: ' + (e.shortMessage || e.message || 'error'));
+  }
+}
+document.getElementById('btnMeta').addEventListener('click', connectMeta);
+document.getElementById('btnPhantom').addEventListener('click', function() {
+  if (window.solana && window.solana.isPhantom) {
+    window.solana.connect().then(function(r) {
+      connectedAddress = r.publicKey.toString();
+      document.getElementById('btnPhantom').innerHTML = '&#x1F47B; ' + connectedAddress.slice(0, 6) + '…' + connectedAddress.slice(-4);
+      document.getElementById('mintDesc').textContent = 'Click to mint 1,000,000 tUSD to your wallet.';
+      showToast('Phantom connected');
+    }).catch(function() {});
+  } else {
+    showToast('Phantom not detected — install it from phantom.app');
+  }
+});
+
+/* Mint tUSD */
+document.getElementById('mintCard').addEventListener('click', async function() {
+  if (!connectedAddress) { showToast('Connect MetaMask first'); return; }
+  if (!ethersSigner)     { showToast('Connect MetaMask first to mint tUSD'); return; }
+  var title = document.getElementById('mintTitle');
+  var desc  = document.getElementById('mintDesc');
+  title.textContent = 'Minting…';
+  desc.textContent  = 'Confirm the transaction in MetaMask…';
+  try {
+    if (!contractsDeployed()) {
+      title.textContent = 'Mint 1,000,000 tUSD';
+      desc.textContent  = 'Deploy contracts first — run deploy.js';
+      showToast('Contracts not deployed yet');
+      return;
+    }
+    var faucetContract = new ethers.Contract(CONTRACTS.faucet, FAUCET_ABI, ethersSigner);
+    var tx = await faucetContract.claim(CONTRACTS.tokens.tUSD);
+    showToast('Mint submitted — waiting for confirmation…');
+    await tx.wait();
+    title.textContent = '1,000,000 tUSD minted ✓';
+    desc.textContent  = 'Sent to ' + connectedAddress.slice(0,6) + '…' + connectedAddress.slice(-4);
+    showToast('1,000,000 tUSD minted!');
+    fetchBalance();
+  } catch(e) {
+    title.textContent = 'Mint 1,000,000 tUSD';
+    var msg = e.reason || e.shortMessage || e.message || 'error';
+    desc.textContent  = msg.includes('cooldown') ? 'Cooldown active — try again in 24h' : msg.slice(0, 60);
+    if (e.code !== 4001 && e.code !== 'ACTION_REJECTED') showToast('Faucet: ' + msg.slice(0, 60));
+  }
+});
+
+document.getElementById('fcaCopy').addEventListener('click', function() {
+  var self = this;
+  navigator.clipboard.writeText('0x18d0d3d0ce27f059804d08bd17179a0ec30e5f26').catch(function() {});
+  self.textContent = 'Copied!';
+  setTimeout(function() { self.textContent = 'Copy'; }, 1500);
+});
+
+/* Scroll animations */
+(function(){
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:0.08});
+  document.querySelectorAll('.anim-fade,.anim-left,.anim-right').forEach(function(el){ obs.observe(el); });
+})();
+
+/* Init */
+renderDropdown();
+fetchQuote();
+window.addEventListener('resize', function() {
+  fetchQuote();
+});
+</script>
+</body>
+</html>

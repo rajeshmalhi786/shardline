@@ -1,0 +1,509 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Docs &mdash; Shardline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:inherit}
+:root{
+  --bg:#0D0D0D;--bg-1:#141414;--bg-2:#1C1C1C;--bg-3:#222222;
+  --border:#222222;--border2:#2E2E2E;
+  --accent:#C8FF00;--text:#FFFFFF;--text-2:#999999;--text-3:#555555;
+}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;}
+
+/* ── Nav ── */
+nav{
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:100;
+  background:rgba(13,13,13,0.94);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding-inline:max(20px,calc(50% - 580px));
+}
+.nav-inner{display:flex;align-items:center;height:52px;}
+.nav-logo{display:flex;align-items:center;gap:8px;font-size:0.9rem;font-weight:600;letter-spacing:-0.01em;margin-right:28px;flex-shrink:0;}
+.logo-icon{width:28px;height:28px;background:var(--accent);border-radius:7px;display:grid;place-items:center;flex-shrink:0;}
+.nav-links{display:flex;align-items:center;gap:2px;list-style:none;}
+.nav-links a{color:var(--text-2);font-size:0.82rem;padding:5px 12px;border-radius:6px;transition:color .12s,background .12s;}
+.nav-links a:hover{color:var(--text);background:var(--bg-2);}
+.nav-links a.active{color:var(--text);border-bottom:2px solid var(--text);border-radius:0;padding-bottom:3px;}
+.nav-right{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.arc-badge{display:flex;align-items:center;gap:6px;font-size:0.68rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-2);border:1px solid var(--border2);padding:4px 10px;border-radius:20px;}
+.arc-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+.nav-x{color:var(--text-3);display:grid;place-items:center;padding:4px;transition:color .12s;}
+.nav-x:hover{color:var(--text);}
+.btn-launch{background:var(--accent);color:#000;padding:7px 16px;border-radius:8px;font-size:0.8rem;font-weight:700;transition:opacity .12s;border:none;}
+.btn-launch:hover{opacity:0.86;}
+
+/* ── Page header ── */
+.docs-header{
+  padding-block:52px 44px;
+  padding-inline:max(20px,calc(50% - 580px));
+  border-bottom:1px solid var(--border);
+}
+.sec-eyebrow{display:flex;align-items:center;gap:10px;font-size:0.68rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;}
+.sec-eyebrow::before{content:'\2014';}
+.docs-h1{font-size:clamp(2rem,4vw,3rem);font-weight:800;letter-spacing:-0.04em;line-height:1.06;margin-bottom:12px;}
+.docs-intro{font-size:0.875rem;color:var(--text-2);line-height:1.7;max-width:480px;}
+
+/* ── Docs body ── */
+.docs-body{
+  display:grid;grid-template-columns:180px 1fr;
+  padding-inline:max(20px,calc(50% - 580px));
+}
+
+/* ── Sidebar ── */
+.docs-sidebar{
+  border-right:1px solid var(--border);
+  padding:36px 20px 80px 0;
+  position:sticky;top:52px;height:calc(100vh - 52px);
+  overflow-y:auto;align-self:start;
+}
+.docs-nav{display:flex;flex-direction:column;gap:2px;}
+.docs-nav-link{font-size:0.8rem;color:var(--text-3);padding:7px 10px;border-radius:6px;transition:color .12s,background .12s;display:block;}
+.docs-nav-link:hover{color:var(--text);background:var(--bg-2);}
+.docs-nav-link.active{color:var(--text);background:var(--bg-2);}
+
+/* ── Content ── */
+.docs-content{padding:52px 0 80px 48px;display:flex;flex-direction:column;gap:64px;min-width:0;}
+.docs-section{}
+.docs-h2{font-size:1.4rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:14px;}
+.docs-p{font-size:0.84rem;color:var(--text-2);line-height:1.75;margin-bottom:12px;}
+.docs-p:last-child{margin-bottom:0;}
+.docs-inline{font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:var(--bg-2);color:var(--text);padding:1px 6px;border-radius:4px;}
+
+/* Arc testnet table */
+.arc-table-card{border:1px solid var(--border2);border-radius:10px;overflow:hidden;margin-top:20px;}
+.arc-table{width:100%;border-collapse:collapse;}
+.arc-table tr{border-bottom:1px solid var(--border);}
+.arc-table tr:last-child{border-bottom:none;}
+.arc-table td{padding:10px 16px;font-size:0.8rem;}
+.arc-table td:first-child{color:var(--text-3);font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;width:110px;}
+.arc-table td:last-child{color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.78rem;text-align:right;}
+
+/* Quick start steps */
+.steps{display:flex;flex-direction:column;gap:10px;margin-top:20px;}
+.step-card{display:flex;align-items:flex-start;gap:14px;background:var(--bg-1);border:1px solid var(--border2);border-radius:12px;padding:18px 20px;}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--accent);color:#000;font-size:0.72rem;font-weight:800;display:grid;place-items:center;flex-shrink:0;margin-top:1px;}
+.step-title{font-size:0.88rem;font-weight:700;margin-bottom:4px;}
+.step-desc{font-size:0.8rem;color:var(--text-2);line-height:1.65;}
+
+/* API endpoint cards */
+.api-cards{display:flex;flex-direction:column;gap:10px;margin-top:20px;}
+.api-card{background:var(--bg-1);border:1px solid var(--border2);border-radius:12px;padding:18px 20px;}
+.api-card-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.tag-get{background:rgba(34,197,94,0.12);color:#4ADE80;font-size:0.62rem;font-weight:700;font-family:'JetBrains Mono',monospace;padding:2px 8px;border-radius:4px;letter-spacing:0.04em;}
+.api-path{font-family:'JetBrains Mono',monospace;font-size:0.84rem;font-weight:600;color:var(--text);}
+.api-desc{font-size:0.8rem;color:var(--text-2);line-height:1.65;margin-bottom:10px;}
+.api-link{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text-3);transition:color .12s;}
+.api-link:hover{color:var(--accent);}
+
+/* Code blocks */
+.docs-code{
+  background:var(--bg-1);border:1px solid var(--border2);
+  border-radius:10px;padding:16px 18px;margin-top:16px;
+  font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text-2);
+  overflow-x:auto;white-space:pre;line-height:1.65;
+  scrollbar-width:thin;scrollbar-color:var(--border2) transparent;
+}
+.docs-subh{font-size:0.88rem;font-weight:700;margin-top:24px;margin-bottom:6px;color:var(--text);}
+
+/* Feature pills */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px;}
+.feat-card{background:var(--bg-1);border:1px solid var(--border2);border-radius:12px;padding:20px;}
+.feat-title{font-size:0.88rem;font-weight:700;margin-bottom:7px;}
+.feat-desc{font-size:0.78rem;color:var(--text-2);line-height:1.65;}
+
+/* Contract cards */
+.contract-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px;}
+.contract-card{background:var(--bg-1);border:1px solid var(--border2);border-radius:12px;padding:20px;}
+.contract-name{font-size:0.88rem;font-weight:700;margin-bottom:7px;}
+.contract-desc{font-size:0.78rem;color:var(--text-2);line-height:1.65;}
+
+/* Footer */
+footer{padding-block:52px 0;padding-inline:max(20px,calc(50% - 580px));border-top:1px solid var(--border);position:relative;overflow:hidden;}
+.footer-top{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:40px;padding-bottom:44px;}
+.footer-logo{display:flex;align-items:center;gap:8px;font-size:0.88rem;font-weight:600;margin-bottom:10px;}
+.footer-blurb{font-size:0.78rem;color:var(--text-2);line-height:1.65;max-width:230px;margin-bottom:16px;}
+.footer-social{display:inline-flex;align-items:center;gap:7px;font-size:0.78rem;color:var(--text-2);transition:color .12s;margin-bottom:10px;}
+.footer-social:hover{color:var(--text);}
+.footer-ca-box{display:inline-flex;align-items:center;gap:7px;background:var(--bg-1);border:1px solid var(--border2);border-radius:8px;padding:6px 8px;font-family:'JetBrains Mono',monospace;font-size:0.62rem;max-width:260px;}
+.fca-label{color:var(--text-3);font-weight:600;flex-shrink:0;}
+.fca-val{color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;}
+.fca-copy{background:var(--accent);border:none;color:#000;padding:3px 8px;border-radius:4px;font-size:0.62rem;font-family:'JetBrains Mono',monospace;font-weight:700;cursor:pointer;flex-shrink:0;transition:opacity .12s;}
+.fca-copy:hover{opacity:0.82;}
+.footer-col-h{font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:14px;}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:9px;}
+.footer-links a{font-size:0.8rem;color:var(--text-2);transition:color .12s;}
+.footer-links a:hover{color:var(--text);}
+.footer-bottom{border-top:1px solid var(--border);padding-block:14px;display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-3);gap:12px;flex-wrap:wrap;position:relative;z-index:1;}
+.footer-watermark{position:absolute;bottom:-0.1em;left:max(20px,calc(50% - 580px));right:0;font-size:clamp(80px,18vw,200px);font-weight:800;letter-spacing:-0.05em;color:rgba(255,255,255,0.032);pointer-events:none;line-height:1;white-space:nowrap;user-select:none;}
+
+/* ── Animations ── */
+@keyframes fadeSlideUp    { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeSlideLeft  { from{opacity:0;transform:translateX(-28px)} to{opacity:1;transform:translateX(0)} }
+@keyframes fadeSlideRight { from{opacity:0;transform:translateX(28px)}  to{opacity:1;transform:translateX(0)} }
+
+.anim-fade  { opacity:0; transform:translateY(24px); transition:opacity 0.5s ease, transform 0.5s ease; }
+.anim-left  { opacity:0; transform:translateX(-28px); transition:opacity 0.5s ease, transform 0.5s ease; }
+.anim-right { opacity:0; transform:translateX(28px);  transition:opacity 0.5s ease, transform 0.5s ease; }
+.anim-fade.visible,.anim-left.visible,.anim-right.visible { opacity:1; transform:none; }
+.d1{transition-delay:0.06s}.d2{transition-delay:0.12s}.d3{transition-delay:0.18s}.d4{transition-delay:0.24s}.d5{transition-delay:0.30s}
+
+/* Page header entrance */
+.sec-eyebrow  { animation: fadeSlideUp 0.45s ease both; }
+.docs-h1      { animation: fadeSlideUp 0.5s ease 0.08s both; }
+.docs-sub, .page-sub { animation: fadeSlideUp 0.5s ease 0.16s both; }
+
+/* Sidebar slides in from left */
+.docs-sidebar { animation: fadeSlideLeft 0.5s ease 0.2s both; }
+
+/* Card hover effects */
+.step-card, .api-card, .contract-card, .feat-card {
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.step-card:hover     { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.35); }
+.api-card:hover    { border-color:var(--border2); box-shadow:0 4px 16px rgba(0,0,0,0.3); }
+.contract-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.35); }
+.feat-card:hover   { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.35); }
+
+/* Sidebar nav link active indicator */
+.docs-nav-link { transition: color 0.15s ease, background 0.15s ease, padding-left 0.15s ease; }
+.docs-nav-link.active { padding-left:14px; }
+
+/* Network table rows */
+.arc-table tr { transition: background 0.15s ease; }
+.arc-table tr:hover { background: var(--bg-2) !important; }
+
+/* Quick start number badge */
+.step-num { transition: transform 0.2s ease; }
+.step-card:hover .step-num { transform: scale(1.1); }
+
+/* Responsive */
+@media(max-width:900px){
+  .docs-body{grid-template-columns:1fr;}
+  .docs-sidebar{display:none;}
+  .docs-content{padding:32px 0 60px;}
+  .feat-grid,.contract-grid{grid-template-columns:1fr;}
+  .footer-top{grid-template-columns:1fr 1fr;gap:26px;}
+  .nav-links{display:none;}
+}
+@media(max-width:560px){.footer-top{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-icon">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M9 2L4 7L9 12" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      shardline
+    </a>
+    <ul class="nav-links">
+      <li><a href="trade.html">Trade</a></li>
+      <li><a href="markets.html">Markets</a></li>
+      <li><a href="how-it-works.html">How it works</a></li>
+      <li><a href="docs.html" class="active">Docs</a></li>
+    </ul>
+    <div class="nav-right">
+      <span class="arc-badge"><span class="arc-dot"></span>ARC TESTNET</span>
+      <a href="#" class="nav-x" aria-label="X">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L2.002 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+      <button class="btn-launch" onclick="window.location.href='trade.html'">Launch app</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Page header -->
+<div class="docs-header">
+  <div class="sec-eyebrow">Docs</div>
+  <h1 class="docs-h1">Build on Shardline</h1>
+  <p class="docs-intro">Plug split routing into your wallet, bot or dApp. Quotes, markets and ready-to-sign swap transactions over a keyless API.</p>
+</div>
+
+<!-- Docs body -->
+<div class="docs-body">
+
+  <!-- Sidebar -->
+  <aside class="docs-sidebar">
+    <nav class="docs-nav">
+      <a href="#arc" class="docs-nav-link active">Arc testnet</a>
+      <a href="#qs" class="docs-nav-link">Quick start</a>
+      <a href="#api" class="docs-nav-link">API &amp; integration</a>
+      <a href="#contracts" class="docs-nav-link">Contracts</a>
+    </nav>
+  </aside>
+
+  <!-- Main content -->
+  <main class="docs-content">
+
+    <!-- Arc testnet -->
+    <div class="docs-section" id="arc">
+      <h2 class="docs-h2">Arc testnet</h2>
+      <p class="docs-p">Arc is Circle&rsquo;s EVM-compatible layer 1. Its gas token is USDC, so fees are priced in dollars. Shardline asks your wallet to add the network automatically, or add it by hand:</p>
+      <div class="arc-table-card anim-fade">
+        <table class="arc-table">
+          <tr><td>Network</td><td>Arc Testnet</td></tr>
+          <tr><td>Chain ID</td><td>5042002</td></tr>
+          <tr><td>RPC</td><td>https://rpc.testnet.arc.network</td></tr>
+          <tr><td>Gas token</td><td>USDC</td></tr>
+          <tr><td>Explorer</td><td>https://testnet.arcscan.app</td></tr>
+          <tr><td>Faucet</td><td>https://faucet.circle.com</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Quick start -->
+    <div class="docs-section" id="qs">
+      <h2 class="docs-h2">Quick start</h2>
+      <div class="steps">
+        <div class="step-card anim-fade d1">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Get gas</div>
+            <p class="step-desc">Request testnet USDC for your wallet address at faucet.circle.com (choose Arc Testnet).</p>
+          </div>
+        </div>
+        <div class="step-card anim-fade d2">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Connect</div>
+            <p class="step-desc">Open Trade, connect a browser wallet and accept the switch to Arc Testnet.</p>
+          </div>
+        </div>
+        <div class="step-card anim-fade d3">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Mint tUSD</div>
+            <p class="step-desc">Press &ldquo;Mint 10,000 test tUSD&rdquo;. The faucet can be used once every six hours per wallet.</p>
+          </div>
+        </div>
+        <div class="step-card anim-fade d4">
+          <div class="step-num">4</div>
+          <div>
+            <div class="step-title">Approve, then swap</div>
+            <p class="step-desc">Approve the router once per token, enter a size and swap. The split is shown before you sign.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- API & integration -->
+    <div class="docs-section" id="api">
+      <h2 class="docs-h2">API</h2>
+      <p class="docs-p">Read-only JSON over HTTPS. No key, no account, CORS open. Amounts in responses are integer strings in the token&rsquo;s smallest unit (tUSD has 6 decimals, instruments have 18).</p>
+
+      <div class="api-cards">
+        <div class="api-card anim-fade d1">
+          <div class="api-card-top">
+            <span class="tag-get">GET</span>
+            <span class="api-path">/api/v1/tokens</span>
+          </div>
+          <p class="api-desc">Every address you need in one call: the router, the tUSD cash token and each instrument with its decimals and pools.</p>
+          <a href="http://localhost:8080/api/tokens" target="_blank" class="api-link">/api/v1/tokens &#x2197;</a>
+        </div>
+
+        <div class="api-card anim-fade d2">
+          <div class="api-card-top">
+            <span class="tag-get">GET</span>
+            <span class="api-path">/api/v1/markets</span>
+          </div>
+          <p class="api-desc">Every instrument with its liquidity-weighted price, total liquidity and per-venue reserves, read at the latest Arc block.</p>
+          <a href="http://localhost:8080/api/markets" target="_blank" class="api-link">/api/v1/markets &#x2197;</a>
+        </div>
+
+        <div class="api-card anim-fade d3">
+          <div class="api-card-top">
+            <span class="tag-get">GET</span>
+            <span class="api-path">/api/v1/quote</span>
+          </div>
+          <p class="api-desc">Plans a split route for an order. &lsquo;symbol&rsquo; is the instrument, &lsquo;side&rsquo; is buy (pay tUSD) or sell (pay the instrument), &lsquo;amount&rsquo; is a decimal in the input token.</p>
+          <a href="http://localhost:8080/api/quote" target="_blank" class="api-link">/api/v1/quote?symbol=tSPY&amp;side=buy&amp;amount=25000 &#x2197;</a>
+        </div>
+
+        <div class="api-card anim-fade d4">
+          <div class="api-card-top">
+            <span class="tag-get">GET</span>
+            <span class="api-path">/api/v1/swap</span>
+          </div>
+          <p class="api-desc">The full integration in one call: a split route plus a ready-to-sign transaction. Returns <span class="docs-inline">to</span> (router address and calldata for swapSplit), <span class="docs-inline">approval</span> (the token and amount to approve first) and <span class="docs-inline">minAmountOut</span>, the floor the router enforces. Optional <span class="docs-inline">slippageBps</span> (default 50), <span class="docs-inline">deadline</span> in seconds (default 600).</p>
+          <a href="http://localhost:8080/api/swaps" target="_blank" class="api-link">/api/v1/swap?symbol=tSPY&amp;side=buy&amp;amount=25000&amp;from=0x&hellip; &#x2197;</a>
+        </div>
+
+        <div class="api-card anim-fade d5">
+          <div class="api-card-top">
+            <span class="tag-get">GET</span>
+            <span class="api-path">/api/v1/health</span>
+          </div>
+          <p class="api-desc">The latest Arc block and whether the market contracts are deployed.</p>
+          <a href="http://localhost:8080/api/health" target="_blank" class="api-link">/api/v1/health &#x2197;</a>
+        </div>
+      </div>
+
+      <div class="docs-code">{
+  "blockNumber": "63992259",
+  "symbol": "tSPY",
+  "side": "buy",
+  "amountIn": "25000000000",
+  "amountOut": "32350000000000000000",
+  "priceImpact": "0.12",
+  "legs": [
+    { "venue": "Deep", "pool": "0x...", "amountIn": "13000&hellip;", "amountOut": "..." },
+    { "venue": "Core", "pool": "0x...", "amountIn": "7750&hellip;",  "amountOut": "..." }
+  ]
+}</div>
+
+      <div class="docs-subh">Integrate a swap in your app (client)</div>
+      <div class="docs-code">import { createWalletClient, custom, erc20Abi } from 'viem'
+
+const base = 'http://localhost:8080/api/v1'
+const qs   = '?symbol=tSPY&amp;side=buy&amp;amount=25000&amp;slippageBps=50&amp;deadline=600'
+
+const route = await fetch(base + '/swap' + qs).then(r => r.json())
+const wallet = createWalletClient({ transport: custom(window.ethereum) })
+const [account] = await wallet.getAddresses()
+
+// 1. approve the router once for the input token
+await wallet.writeContract({ abi: erc20Abi, address: route.approval.token,
+  functionName: 'approve', args: [route.to.address, BigInt(route.approval.amount)] })
+
+// 2. send the split route — every leg fills in one transaction or none do
+await wallet.sendTransaction({ account, chain: null, to: route.to.address,
+  data: route.to.calldata })</div>
+
+      <div class="feat-grid">
+        <div class="feat-card anim-fade d1">
+          <div class="feat-title">Keyless</div>
+          <p class="feat-desc">No API key, no sign-up, CORS open. Call it from a browser, a bot or a backend.</p>
+        </div>
+        <div class="feat-card anim-fade d2">
+          <div class="feat-title">Non-custodial</div>
+          <p class="feat-desc">The API never touches keys or funds. It returns calldata; the user&rsquo;s wallet signs.</p>
+        </div>
+        <div class="feat-card anim-fade d3">
+          <div class="feat-title">Protected</div>
+          <p class="feat-desc">minAmountOut is baked into the calldata. If the route can&rsquo;t clear it, the chain reverts.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contracts -->
+    <div class="docs-section" id="contracts">
+      <h2 class="docs-h2">Contracts</h2>
+      <p class="docs-p">Three small Solidity contracts, deployed to Arc testnet with Foundry.</p>
+
+      <div class="contract-grid">
+        <div class="contract-card anim-fade d1">
+          <div class="contract-name">ShardlinePool</div>
+          <p class="contract-desc">Constant-product pool with a fixed fee and a venue label. getAmountOut is the formula the app uses.</p>
+        </div>
+        <div class="contract-card anim-fade d2">
+          <div class="contract-name">ShardlineRouter</div>
+          <p class="contract-desc">Pulls the input once, fans it out across legs, and enforces one minimum on the total.</p>
+        </div>
+        <div class="contract-card anim-fade d3">
+          <div class="contract-name">TestToken</div>
+          <p class="contract-desc">Minimal ERC-20. The tUSD instance has a public faucet with a six-hour cooldown.</p>
+        </div>
+      </div>
+
+      <div class="docs-code"># from contracts/
+PRIVATE_KEY=&lt;key&gt; ./deploy.sh  # deploys to Arc testnet and writes src/lib/deployments.ts</div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">
+        <div class="logo-icon">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M9 2L4 7L9 12" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        shardline
+      </div>
+      <p class="footer-blurb">Split-routed swaps on Arc Testnet. One order in, the best split out, settled in a single transaction.</p>
+      <a href="#" class="footer-social">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L2.002 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        Follow @ShardlineHq
+      </a><br>
+      <div class="footer-ca-box" style="margin-top:10px">
+        <span class="fca-label">CA</span>
+        <span class="fca-val">0x18d0d3d0ce27f059804d08bd17179a0ec30e5f26</span>
+        <button class="fca-copy" id="fcaCopy">Copy</button>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-h">Product</div>
+      <ul class="footer-links">
+        <li><a href="trade.html">Trade</a></li>
+        <li><a href="markets.html">Markets</a></li>
+        <li><a href="how-it-works.html">How it works</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-h">Build</div>
+      <ul class="footer-links">
+        <li><a href="docs.html">Docs &amp; API</a></li>
+        <li><a href="http://localhost:8080/api/markets" target="_blank">API index (JSON)</a></li>
+        <li><a href="http://localhost:8080/api/markets" target="_blank">Live markets (JSON)</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-h">Arc</div>
+      <ul class="footer-links">
+        <li><a href="https://faucet.circle.com" target="_blank">USDC faucet</a></li>
+        <li><a href="https://testnet.arcscan.app" target="_blank">ArcScan explorer</a></li>
+        <li><a href="https://docs.arc.network" target="_blank">Arc docs</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>Arc Testnet &middot; chain 5042002</span>
+    <span>Testnet only. Tokens here have no value.</span>
+  </div>
+  <div class="footer-watermark" aria-hidden="true">shardline</div>
+</footer>
+
+<script>
+const sections = ['arc','qs','api','contracts'];
+const links = document.querySelectorAll('.docs-nav-link');
+window.addEventListener('scroll', () => {
+  let cur = sections[0];
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 100) cur = id;
+  });
+  links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#'+cur));
+}, {passive:true});
+
+/* Scroll observer */
+(function(){
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:0.06});
+  document.querySelectorAll('.anim-fade,.anim-left,.anim-right').forEach(function(el){ obs.observe(el); });
+})();
+
+document.getElementById('fcaCopy').addEventListener('click', function() {
+  navigator.clipboard.writeText('0x18d0d3d0ce27f059804d08bd17179a0ec30e5f26').catch(()=>{});
+  this.textContent = 'Copied!';
+  setTimeout(() => { this.textContent = 'Copy'; }, 1500);
+});
+</script>
+</body>
+</html>

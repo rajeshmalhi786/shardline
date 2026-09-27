@@ -1,0 +1,410 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How it works &mdash; Shardline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:inherit}
+:root {
+  --bg:#0D0D0D; --bg-1:#141414; --bg-2:#1C1C1C; --bg-3:#222222;
+  --border:#222222; --border2:#2E2E2E;
+  --accent:#C8FF00; --text:#FFFFFF; --text-2:#999999; --text-3:#555555;
+}
+body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
+
+/* ── Nav ── */
+nav {
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:100;
+  background:rgba(13,13,13,0.94); backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding-inline:max(20px,calc(50% - 580px));
+}
+.nav-inner { display:flex; align-items:center; height:52px; }
+.nav-logo {
+  display:flex; align-items:center; gap:8px;
+  font-size:0.9rem; font-weight:600; letter-spacing:-0.01em;
+  margin-right:28px; flex-shrink:0;
+}
+.logo-icon {
+  width:28px; height:28px; background:var(--accent);
+  border-radius:7px; display:grid; place-items:center; flex-shrink:0;
+}
+.nav-links { display:flex; align-items:center; gap:2px; list-style:none; }
+.nav-links a {
+  color:var(--text-2); font-size:0.82rem; padding:5px 12px;
+  border-radius:6px; transition:color .12s, background .12s;
+}
+.nav-links a:hover { color:var(--text); background:var(--bg-2); }
+.nav-links a.active { color:var(--text); border-bottom:2px solid var(--text); border-radius:0; padding-bottom:3px; }
+.nav-right { display:flex; align-items:center; gap:8px; margin-left:auto; }
+.arc-badge {
+  display:flex; align-items:center; gap:6px;
+  font-size:0.68rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase;
+  color:var(--text-2); border:1px solid var(--border2); padding:4px 10px; border-radius:20px;
+}
+.arc-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); flex-shrink:0; }
+.nav-x { color:var(--text-3); display:grid; place-items:center; padding:4px; transition:color .12s; }
+.nav-x:hover { color:var(--text); }
+.btn-launch {
+  background:var(--accent); color:#000; padding:7px 16px;
+  border-radius:8px; font-size:0.8rem; font-weight:700; transition:opacity .12s; border:none;
+}
+.btn-launch:hover { opacity:0.86; }
+
+/* ── Section layout ── */
+.section {
+  padding-block:72px;
+  padding-inline:max(20px,calc(50% - 580px));
+  border-bottom:1px solid var(--border);
+}
+.sec-eyebrow {
+  display:flex; align-items:center; gap:10px;
+  font-size:0.68rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
+  color:var(--accent); margin-bottom:14px;
+}
+.sec-eyebrow::before { content:'\2014'; }
+.sec-h2 {
+  font-size:clamp(1.9rem,3.5vw,2.9rem); font-weight:800;
+  letter-spacing:-0.04em; line-height:1.08; margin-bottom:12px; text-wrap:balance;
+}
+.sec-sub { font-size:0.875rem; color:var(--text-2); line-height:1.7; max-width:520px; }
+
+/* ── Steps ── */
+.steps-wrap { margin-top:52px; display:flex; flex-direction:column; }
+.step-row { display:flex; gap:18px; align-items:flex-start; }
+.step-indicator { display:flex; flex-direction:column; align-items:center; flex-shrink:0; }
+.step-dot {
+  width:32px; height:32px; border-radius:8px;
+  background:var(--bg-2); border:1px solid var(--border2);
+  display:grid; place-items:center;
+  font-family:'JetBrains Mono',monospace; font-size:0.65rem;
+  font-weight:600; color:var(--text-3); flex-shrink:0;
+}
+.step-line {
+  width:1px; background:var(--border2); flex:1; min-height:24px; margin-block:5px;
+}
+.step-card {
+  flex:1; background:var(--bg-1); border:1px solid var(--border2);
+  border-radius:12px; padding:22px 22px 18px; margin-bottom:14px;
+}
+.step-title { font-size:0.95rem; font-weight:700; margin-bottom:8px; }
+.step-desc { font-size:0.82rem; color:var(--text-2); line-height:1.7; margin-bottom:14px; }
+.step-code {
+  background:var(--bg); border:1px solid var(--border);
+  border-radius:7px; padding:10px 14px;
+  font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--text-2);
+  overflow-x:auto; white-space:nowrap; scrollbar-width:none;
+}
+.step-code::-webkit-scrollbar { display:none; }
+
+/* ── Plainly ── */
+.plainly-grid {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:1px; background:var(--border); border:1px solid var(--border);
+  border-radius:12px; overflow:hidden; margin-top:36px; margin-bottom:36px;
+}
+.plainly-card { background:var(--bg-1); padding:26px 22px; }
+.plainly-title { font-size:0.9rem; font-weight:700; margin-bottom:9px; }
+.plainly-desc { font-size:0.8rem; color:var(--text-2); line-height:1.7; }
+.btn-primary {
+  display:inline-flex; align-items:center;
+  background:var(--accent); color:#000; padding:10px 22px;
+  border-radius:9px; font-size:0.85rem; font-weight:700;
+  transition:opacity .12s; border:none;
+}
+.btn-primary:hover { opacity:0.88; }
+
+/* ── Footer ── */
+footer {
+  padding-block:52px 0; padding-inline:max(20px,calc(50% - 580px));
+  border-top:1px solid var(--border); position:relative; overflow:hidden;
+}
+.footer-top {
+  display:grid; grid-template-columns:1.8fr 1fr 1fr 1fr;
+  gap:40px; padding-bottom:44px;
+}
+.footer-logo { display:flex; align-items:center; gap:8px; font-size:0.88rem; font-weight:600; margin-bottom:10px; }
+.footer-blurb { font-size:0.78rem; color:var(--text-2); line-height:1.65; max-width:230px; margin-bottom:16px; }
+.footer-social {
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:0.78rem; color:var(--text-2); transition:color .12s; margin-bottom:10px;
+}
+.footer-social:hover { color:var(--text); }
+.footer-ca-box {
+  display:inline-flex; align-items:center; gap:7px;
+  background:var(--bg-1); border:1px solid var(--border2);
+  border-radius:8px; padding:6px 8px;
+  font-family:'JetBrains Mono',monospace; font-size:0.62rem; max-width:260px;
+}
+.fca-label { color:var(--text-3); font-weight:600; flex-shrink:0; }
+.fca-val { color:var(--text-2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; min-width:0; }
+.fca-copy {
+  background:var(--accent); border:none; color:#000;
+  padding:3px 8px; border-radius:4px;
+  font-size:0.62rem; font-family:'JetBrains Mono',monospace; font-weight:700;
+  cursor:pointer; flex-shrink:0; transition:opacity .12s;
+}
+.fca-copy:hover { opacity:0.82; }
+.footer-col-h {
+  font-size:0.65rem; font-weight:700; letter-spacing:0.1em;
+  text-transform:uppercase; color:var(--text-3); margin-bottom:14px;
+}
+.footer-links { list-style:none; display:flex; flex-direction:column; gap:9px; }
+.footer-links a { font-size:0.8rem; color:var(--text-2); transition:color .12s; }
+.footer-links a:hover { color:var(--text); }
+.footer-bottom {
+  border-top:1px solid var(--border); padding-block:14px;
+  display:flex; justify-content:space-between;
+  font-size:0.72rem; color:var(--text-3); gap:12px; flex-wrap:wrap;
+  position:relative; z-index:1;
+}
+.footer-watermark {
+  position:absolute; bottom:-0.1em; left:max(20px,calc(50% - 580px)); right:0;
+  font-size:clamp(80px,18vw,200px); font-weight:800; letter-spacing:-0.05em;
+  color:rgba(255,255,255,0.032); pointer-events:none; line-height:1;
+  white-space:nowrap; user-select:none;
+}
+
+/* ── Animations ── */
+@keyframes fadeSlideUp   { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeSlideLeft { from{opacity:0;transform:translateX(-28px)} to{opacity:1;transform:translateX(0)} }
+@keyframes typewriter    { from{width:0} to{width:100%} }
+@keyframes blink         { 50%{border-color:transparent} }
+
+.anim-fade  { opacity:0; transform:translateY(24px); transition:opacity 0.55s ease, transform 0.55s ease; }
+.anim-left  { opacity:0; transform:translateX(-28px); transition:opacity 0.55s ease, transform 0.55s ease; }
+.anim-fade.visible,.anim-left.visible { opacity:1; transform:none; }
+.d1{transition-delay:0.07s}.d2{transition-delay:0.14s}.d3{transition-delay:0.21s}.d4{transition-delay:0.28s}
+
+/* Page header entrance */
+.sec-eyebrow { animation: fadeSlideUp 0.45s ease both; }
+.page-h1, .sec-h2 { animation: fadeSlideUp 0.5s ease 0.08s both; }
+.page-sub, .sec-sub { animation: fadeSlideUp 0.5s ease 0.16s both; }
+
+/* Step card hover */
+.step-card, .plainly-card {
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.step-card:hover { transform:translateY(-3px); box-shadow:0 8px 28px rgba(0,0,0,0.4); }
+.plainly-card:hover { background: var(--bg-2) !important; }
+
+/* Step number glow on hover */
+.step-num, .step-dot {
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.step-card:hover .step-num,
+.step-card:hover .step-dot { background: var(--accent); color: #000; }
+
+/* Code block fade-in */
+.step-code {
+  transition: opacity 0.4s ease;
+}
+
+/* CTA button */
+.btn-primary, .btn-ghost { transition: opacity 0.15s ease, transform 0.15s ease; }
+.btn-primary:hover { transform: scale(1.03); }
+.btn-ghost:hover { transform: scale(1.02); }
+
+/* ── Responsive ── */
+@media (max-width:900px) {
+  .footer-top { grid-template-columns:1fr 1fr; gap:26px; }
+  .plainly-grid { grid-template-columns:1fr; }
+  .nav-links { display:none; }
+}
+@media (max-width:560px) {
+  .footer-top { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-icon">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M9 2L4 7L9 12" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      shardline
+    </a>
+    <ul class="nav-links">
+      <li><a href="trade.html">Trade</a></li>
+      <li><a href="markets.html">Markets</a></li>
+      <li><a href="how-it-works.html" class="active">How it works</a></li>
+      <li><a href="docs.html">Docs</a></li>
+    </ul>
+    <div class="nav-right">
+      <span class="arc-badge"><span class="arc-dot"></span>ARC TESTNET</span>
+      <a href="#" class="nav-x" aria-label="X">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L2.002 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+      <button class="btn-launch" onclick="window.location.href='trade.html'">Launch app</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ── How it works ── -->
+<section class="section">
+  <div class="sec-eyebrow">How it works</div>
+  <h1 class="sec-h2">One order, cut into<br>shards, settled as one.</h1>
+  <p class="sec-sub">A single pool gets more expensive the more you take from it. Shardline spreads your order across every pool on Arc Testnet so no single one moves too far &mdash; and proves the price on-chain.</p>
+
+  <div class="steps-wrap">
+
+    <div class="step-row">
+      <div class="step-indicator">
+        <div class="step-dot">01</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-card anim-fade">
+        <div class="step-title">Read the reserves</div>
+        <p class="step-desc">Every venue for the pair is read in one multicall at the latest Arc block. Two numbers per pool &mdash; the tUSD side and the instrument side &mdash; are all a constant-product pool needs to price any size.</p>
+        <div class="step-code">reserve(0), reserve(1) // per pool, one multicall</div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-indicator">
+        <div class="step-dot">02</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-card anim-fade d1">
+        <div class="step-title">Price each shard</div>
+        <p class="step-desc">The order is cut into 48 equal shards. Each one is priced against every pool as if that pool had already absorbed the shards before it, using the pool&rsquo;s own integer formula with the fee taken off the input.</p>
+        <div class="step-code">out = in*(10000-fee)*r_out / (r_in*10000 + in*(10000-fee))</div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-indicator">
+        <div class="step-dot">03</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-card anim-fade d2">
+        <div class="step-title">Send each shard where it pays most</div>
+        <p class="step-desc">A shard goes to whichever pool returns the most for it right now. Deep pools win early; as they fill, their marginal price worsens and the thinner venues start to win. The result is the split where no shard would do better elsewhere.</p>
+        <div class="step-code">pick = argmax(out(used + shard) - out(used))</div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <div class="step-indicator">
+        <div class="step-dot">04</div>
+      </div>
+      <div class="step-card anim-fade d3">
+        <div class="step-title">Settle once, all or nothing</div>
+        <p class="step-desc">The router puts your input once, pays every leg, and checks the total against a single minimum before sending you the output. Miss the floor and the whole transaction reverts.</p>
+        <div class="step-code">swap(splitPools, amounts, tokenIn, minOut, deadline)</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── Plainly ── -->
+<section class="section" style="border-bottom:none">
+  <div class="sec-eyebrow">Plainly</div>
+  <h2 class="sec-h2">What this is, and what it is not.</h2>
+
+  <div class="plainly-grid">
+    <div class="plainly-card anim-fade">
+      <div class="plainly-title">Test assets only</div>
+      <p class="plainly-desc">Every token on Shardline is a testnet token with no value. Instrument names identify a model market, not a claim on any real security.</p>
+    </div>
+    <div class="plainly-card anim-fade d1">
+      <div class="plainly-title">Constant-product pools</div>
+      <p class="plainly-desc">Venues are plain x&times;y=k pools deployed for this market, so the maths is small enough to reproduce on the client exactly.</p>
+    </div>
+    <div class="plainly-card anim-fade d2">
+      <div class="plainly-title">No custody</div>
+      <p class="plainly-desc">The router holds nothing between transactions and there is no admin function that can move a trader&rsquo;s tokens.</p>
+    </div>
+  </div>
+
+  <a href="trade.html" class="btn-primary anim-fade">Try a split &#x2192;</a>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">
+        <div class="logo-icon">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M9 2L4 7L9 12" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        shardline
+      </div>
+      <p class="footer-blurb">Split-routed swaps on Arc Testnet. One order in, the best split out, settled in a single transaction.</p>
+      <a href="#" class="footer-social">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L2.002 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        Follow @ShardlineHq
+      </a><br>
+      <div class="footer-ca-box" style="margin-top:10px">
+        <span class="fca-label">CA</span>
+        <span class="fca-val">0x18d0d3d0ce27f059804d08bd17179a0ec30e5f26</span>
+        <button class="fca-copy" id="fcaCopy">Copy</button>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-h">Product</div>
+      <ul class="footer-links">
+        <li><a href="trade.html">Trade</a></li>
+        <li><a href="markets.html">Markets</a></li>
+        <li><a href="how-it-works.html">How it works</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-h">Build</div>
+      <ul class="footer-links">
+        <li><a href="#">Docs &amp; API</a></li>
+        <li><a href="http://localhost:8080/api/markets">API index (JSON)</a></li>
+        <li><a href="http://localhost:8080/api/markets">Live markets (JSON)</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-h">Arc</div>
+      <ul class="footer-links">
+        <li><a href="https://faucet.circle.com" target="_blank">USDC faucet</a></li>
+        <li><a href="https://testnet.arcscan.app" target="_blank">ArcScan explorer</a></li>
+        <li><a href="https://docs.arc.network" target="_blank">Arc docs</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>Arc Testnet &middot; chain 5042002</span>
+    <span>Testnet only. Tokens here have no value.</span>
+  </div>
+  <div class="footer-watermark" aria-hidden="true">shardline</div>
+</footer>
+
+<script>
+document.getElementById('fcaCopy').addEventListener('click', function() {
+  navigator.clipboard.writeText('0x18d0d3d0ce27f059804d08bd17179a0ec30e5f26').catch(()=>{});
+  this.textContent = 'Copied!';
+  setTimeout(() => { this.textContent = 'Copy'; }, 1500);
+});
+</script>
+<script>
+/* Scroll observer */
+(function(){
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:0.08});
+  document.querySelectorAll('.anim-fade,.anim-left').forEach(function(el){ obs.observe(el); });
+})();
+</script>
+</body>
+</html>
+
+
+
+

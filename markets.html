@@ -1,0 +1,498 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Markets &mdash; Shardline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:inherit}
+:root {
+  --bg:#0D0D0D; --bg-1:#141414; --bg-2:#1C1C1C; --bg-3:#222222;
+  --border:#222222; --border2:#2E2E2E;
+  --accent:#C8FF00; --text:#FFFFFF; --text-2:#999999; --text-3:#555555;
+}
+body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
+
+/* â”€â”€ Nav â”€â”€ */
+nav {
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:100;
+  background:rgba(13,13,13,0.94); backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding-inline:max(20px,calc(50% - 580px));
+}
+.nav-inner { display:flex; align-items:center; height:52px; }
+.nav-logo {
+  display:flex; align-items:center; gap:8px;
+  font-size:0.9rem; font-weight:600; letter-spacing:-0.01em;
+  margin-right:28px; flex-shrink:0;
+}
+.logo-icon {
+  width:28px; height:28px; background:var(--accent);
+  border-radius:7px; display:grid; place-items:center; flex-shrink:0;
+}
+.nav-links { display:flex; align-items:center; gap:2px; list-style:none; }
+.nav-links a {
+  color:var(--text-2); font-size:0.82rem; padding:5px 12px;
+  border-radius:6px; transition:color .12s, background .12s;
+}
+.nav-links a:hover { color:var(--text); background:var(--bg-2); }
+.nav-links a.active { color:var(--text); border-bottom:2px solid var(--text); border-radius:0; padding-bottom:3px; }
+.nav-right { display:flex; align-items:center; gap:8px; margin-left:auto; }
+.arc-badge {
+  display:flex; align-items:center; gap:6px;
+  font-size:0.68rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase;
+  color:var(--text-2); border:1px solid var(--border2); padding:4px 10px; border-radius:20px;
+}
+.arc-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); flex-shrink:0; }
+.nav-x { color:var(--text-3); display:grid; place-items:center; padding:4px; transition:color .12s; }
+.nav-x:hover { color:var(--text); }
+.btn-launch {
+  background:var(--accent); color:#000; padding:7px 16px;
+  border-radius:8px; font-size:0.8rem; font-weight:700; transition:opacity .12s; border:none;
+}
+.btn-launch:hover { opacity:0.86; }
+
+/* â”€â”€ Page layout â”€â”€ */
+.page-wrap {
+  padding-block:64px;
+  padding-inline:max(20px,calc(50% - 580px));
+}
+
+/* â”€â”€ Eyebrow / heading â”€â”€ */
+.sec-eyebrow {
+  display:flex; align-items:center; gap:10px;
+  font-size:0.68rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
+  color:var(--accent); margin-bottom:14px;
+}
+.sec-eyebrow::before { content:'\2014'; }
+.sec-h2 {
+  font-size:clamp(2rem,4vw,3rem); font-weight:800;
+  letter-spacing:-0.04em; line-height:1.06; margin-bottom:12px; text-wrap:balance;
+}
+.sec-sub { font-size:0.875rem; color:var(--text-2); line-height:1.7; max-width:560px; margin-bottom:36px; }
+
+/* â”€â”€ Markets table card â”€â”€ */
+.markets-card {
+  border:1px solid var(--border2); border-radius:14px;
+  overflow:hidden; overflow-x:auto;
+}
+table { width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; min-width:520px; }
+thead tr { border-bottom:1px solid var(--border); }
+th {
+  padding:12px 20px; text-align:right;
+  font-size:0.65rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-3);
+}
+th:first-child { text-align:left; }
+tbody tr { border-bottom:1px solid var(--border); transition:background .1s; }
+tbody tr:last-child { border-bottom:none; }
+tbody tr:hover { background:rgba(255,255,255,0.02); }
+td { padding:13px 20px; font-size:0.85rem; vertical-align:middle; text-align:right; }
+td:first-child { text-align:left; }
+.td-instrument { display:flex; align-items:center; gap:13px; }
+.tok-avatar {
+  width:36px; height:36px; border-radius:9px;
+  display:grid; place-items:center;
+  font-size:0.62rem; font-weight:700; letter-spacing:.02em;
+  flex-shrink:0; color:#fff;
+}
+.tok-sym { font-weight:600; font-size:0.87rem; line-height:1.2; }
+.tok-name { font-size:0.72rem; color:var(--text-3); margin-top:1px; }
+.td-price { font-family:'JetBrains Mono',monospace; font-size:0.85rem; }
+.td-liq   { font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:var(--text-2); }
+.venues-cell { display:flex; align-items:center; gap:5px; justify-content:flex-end; flex-wrap:wrap; }
+.venue-pill {
+  font-size:0.63rem; font-weight:600; letter-spacing:0.02em;
+  color:var(--text-3); background:var(--bg-2); border:1px solid var(--border);
+  padding:2px 8px; border-radius:20px; white-space:nowrap;
+}
+.markets-footer {
+  padding:9px 20px; border-top:1px solid var(--border);
+  font-size:0.7rem; color:var(--text-3);
+  font-family:'JetBrains Mono',monospace; background:var(--bg-1);
+}
+
+/* â”€â”€ Contract cards â”€â”€ */
+.contracts-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:28px;
+}
+.contract-card {
+  background:var(--bg-1); border:1px solid var(--border2);
+  border-radius:12px; padding:16px 18px;
+}
+.contract-label {
+  font-size:0.62rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+  color:var(--text-3); margin-bottom:8px;
+}
+.contract-addr {
+  font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--text-2);
+  display:flex; align-items:center; gap:6px;
+}
+.contract-addr a { color:var(--text-2); transition:color .12s; }
+.contract-addr a:hover { color:var(--text); }
+
+/* â”€â”€ Footer â”€â”€ */
+footer {
+  padding-block:52px 0; padding-inline:max(20px,calc(50% - 580px));
+  border-top:1px solid var(--border); position:relative; overflow:hidden; margin-top:64px;
+}
+.footer-top {
+  display:grid; grid-template-columns:1.8fr 1fr 1fr 1fr;
+  gap:40px; padding-bottom:44px;
+}
+.footer-logo { display:flex; align-items:center; gap:8px; font-size:0.88rem; font-weight:600; margin-bottom:10px; }
+.footer-blurb { font-size:0.78rem; color:var(--text-2); line-height:1.65; max-width:230px; margin-bottom:16px; }
+.footer-social {
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:0.78rem; color:var(--text-2); transition:color .12s; margin-bottom:10px;
+}
+.footer-social:hover { color:var(--text); }
+.footer-ca-box {
+  display:inline-flex; align-items:center; gap:7px;
+  background:var(--bg-1); border:1px solid var(--border2);
+  border-radius:8px; padding:6px 8px;
+  font-family:'JetBrains Mono',monospace; font-size:0.62rem; max-width:260px;
+}
+.fca-label { color:var(--text-3); font-weight:600; flex-shrink:0; }
+.fca-val { color:var(--text-2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; min-width:0; }
+.fca-copy {
+  background:var(--accent); border:none; color:#000;
+  padding:3px 8px; border-radius:4px;
+  font-size:0.62rem; font-family:'JetBrains Mono',monospace; font-weight:700;
+  cursor:pointer; flex-shrink:0; transition:opacity .12s;
+}
+.fca-copy:hover { opacity:0.82; }
+.footer-col-h {
+  font-size:0.65rem; font-weight:700; letter-spacing:0.1em;
+  text-transform:uppercase; color:var(--text-3); margin-bottom:14px;
+}
+.footer-links { list-style:none; display:flex; flex-direction:column; gap:9px; }
+.footer-links a { font-size:0.8rem; color:var(--text-2); transition:color .12s; }
+.footer-links a:hover { color:var(--text); }
+.footer-bottom {
+  border-top:1px solid var(--border); padding-block:14px;
+  display:flex; justify-content:space-between;
+  font-size:0.72rem; color:var(--text-3); gap:12px; flex-wrap:wrap;
+  position:relative; z-index:1;
+}
+.footer-watermark {
+  position:absolute; bottom:-0.1em; left:max(20px,calc(50% - 580px)); right:0;
+  font-size:clamp(80px,18vw,200px); font-weight:800; letter-spacing:-0.05em;
+  color:rgba(255,255,255,0.032); pointer-events:none; line-height:1;
+  white-space:nowrap; user-select:none;
+}
+
+/* â”€â”€ Responsive â”€â”€ */
+@media (max-width:900px) {
+  .footer-top { grid-template-columns:1fr 1fr; gap:26px; }
+  .nav-links { display:none; }
+}
+@media (max-width:600px) {
+  .footer-top { grid-template-columns:1fr; }
+  .contracts-grid { grid-template-columns:1fr; }
+}
+
+/* ── Animations ── */
+@keyframes fadeSlideUp   { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeSlideLeft { from{opacity:0;transform:translateX(-28px)} to{opacity:1;transform:translateX(0)} }
+@keyframes rowIn { from{opacity:0;transform:translateX(-12px)} to{opacity:1;transform:translateX(0)} }
+@keyframes priceFlash { 0%{color:var(--accent)} 100%{color:inherit} }
+
+.anim-fade  { opacity:0; transform:translateY(24px); transition:opacity 0.5s ease, transform 0.5s ease; }
+.anim-left  { opacity:0; transform:translateX(-28px); transition:opacity 0.5s ease, transform 0.5s ease; }
+.anim-fade.visible,.anim-left.visible { opacity:1; transform:none; }
+.d1{transition-delay:0.07s}.d2{transition-delay:0.14s}.d3{transition-delay:0.21s}.d4{transition-delay:0.28s}
+
+/* Page header entrance */
+.sec-eyebrow { animation: fadeSlideUp 0.45s ease both; }
+.page-h1 { animation: fadeSlideUp 0.5s ease 0.08s both; }
+.page-sub { animation: fadeSlideUp 0.5s ease 0.16s both; }
+
+/* Table hover lift */
+tbody tr { transition: background 0.15s ease; }
+tbody tr:hover { background: rgba(200,255,0,0.03) !important; }
+
+/* Contract / venue card hover */
+.contract-card, .venue-pill {
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.contract-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,0.35); }
+
+/* Price flash on update */
+.price-flash { animation: priceFlash 0.8s ease; }
+
+/* Markets table slide in */
+.markets-wrap { animation: fadeSlideUp 0.55s ease 0.3s both; }
+</style>
+</head>
+<body>
+
+<!-- â”€â”€ Nav â”€â”€ -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-icon">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M9 2L4 7L9 12" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      shardline
+    </a>
+    <ul class="nav-links">
+      <li><a href="trade.html">Trade</a></li>
+      <li><a href="markets.html" class="active">Markets</a></li>
+      <li><a href="how-it-works.html">How it works</a></li>
+      <li><a href="docs.html">Docs</a></li>
+    </ul>
+    <div class="nav-right">
+      <span class="arc-badge"><span class="arc-dot"></span>ARC TESTNET</span>
+      <a href="#" class="nav-x" aria-label="X">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L2.002 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+      <button class="btn-launch" onclick="window.location.href='trade.html'">Launch app</button>
+    </div>
+  </div>
+</nav>
+
+<!-- â”€â”€ Markets content â”€â”€ -->
+<div class="page-wrap">
+  <div class="sec-eyebrow">Markets</div>
+  <h1 class="sec-h2 page-h1">Every pool, every venue.</h1>
+  <p class="sec-sub page-sub">Each instrument trades against tUSD in three venues with different fees and depth: Deep (5 bps), Core (30 bps) and Thin (100 bps). Prices are liquidity-weighted across them at the latest Arc block.</p>
+
+  <div class="markets-card markets-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left">Instrument</th>
+          <th>Price</th>
+          <th>Liquidity</th>
+          <th>Venues</th>
+        </tr>
+      </thead>
+      <tbody id="marketsTbody">
+        <tr><td colspan="4" style="padding:32px;text-align:center;color:var(--text-3)">Loading&hellip;</td></tr>
+      </tbody>
+    </table>
+    <div class="markets-footer" id="marketsFooter">Read at Arc block &mdash;</div>
+  </div>
+
+  <!-- Contract address cards -->
+  <div class="contracts-grid">
+    <div class="contract-card anim-fade d1">
+      <div class="contract-label">Router</div>
+      <div class="contract-addr">
+        <span>0x02402dcf319e41819d23071111db5984cd6fd75c</span>
+        <a href="https://testnet.arcscan.app/address/0x02402dcf319e41819d23071111db5984cd6fd75c" target="_blank" aria-label="View on ArcScan">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 11L11 1M11 1H6M11 1V6"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="contract-card anim-fade d2">
+      <div class="contract-label">tUSD (Faucet Token)</div>
+      <div class="contract-addr">
+        <span>0x499b5a21908c4aeabc88f55720f14e2fc16de1b8</span>
+        <a href="https://testnet.arcscan.app/address/0x499b5a21908c4aeabc88f55720f14e2fc16de1b8" target="_blank" aria-label="View on ArcScan">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 11L11 1M11 1H6M11 1V6"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- â”€â”€ Footer â”€â”€ -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">
+        <div class="logo-icon">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M9 2L4 7L9 12" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        shardline
+      </div>
+      <p class="footer-blurb">Split-routed swaps on Arc Testnet. One order in, the best split out, settled in a single transaction.</p>
+      <a href="#" class="footer-social">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L2.002 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        Follow @ShardlineHq
+      </a><br>
+      <div class="footer-ca-box" style="margin-top:10px">
+        <span class="fca-label">CA</span>
+        <span class="fca-val">0x18d0d3d0ce27f059804d08bd17179a0ec30e5f26</span>
+        <button class="fca-copy" id="fcaCopy">Copy</button>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-h">Product</div>
+      <ul class="footer-links">
+        <li><a href="trade.html">Trade</a></li>
+        <li><a href="markets.html">Markets</a></li>
+        <li><a href="how-it-works.html">How it works</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-h">Build</div>
+      <ul class="footer-links">
+        <li><a href="#">Docs &amp; API</a></li>
+        <li><a href="http://localhost:8080/api/markets">API index (JSON)</a></li>
+        <li><a href="http://localhost:8080/api/markets">Live markets (JSON)</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-h">Arc</div>
+      <ul class="footer-links">
+        <li><a href="https://faucet.circle.com" target="_blank">USDC faucet</a></li>
+        <li><a href="https://testnet.arcscan.app" target="_blank">ArcScan explorer</a></li>
+        <li><a href="https://docs.arc.network" target="_blank">Arc docs</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>Arc Testnet &middot; chain 5042002</span>
+    <span>Testnet only. Tokens here have no value.</span>
+  </div>
+  <div class="footer-watermark" aria-hidden="true">shardline</div>
+</footer>
+
+<script>
+const API = window.location.origin;
+
+const TOKEN_META = {
+  tSPY:  { name:'Test S&P 500 ETF',    abbr:'SP', color:'#DC2626' },
+  tQQQ:  { name:'Test Nasdaq-100 ETF', abbr:'Q',  color:'#2563EB' },
+  tNVDA: { name:'Test NVIDIA',         abbr:'NV', color:'#16A34A' },
+  tAAPL: { name:'Test Apple',          abbr:'A',  color:'#6B7280' },
+  tTSLA: { name:'Test Tesla',          abbr:'T',  color:'#EF4444' },
+  tMSFT: { name:'Test Microsoft',      abbr:'MS', color:'#3B82F6' },
+  tAMZN: { name:'Test Amazon',         abbr:'AZ', color:'#374151' },
+  tCOIN: { name:'Test Coinbase',       abbr:'CB', color:'#1D4ED8' },
+};
+
+function fmtLiq(v) {
+  if (v >= 1e6) return '$' + (v/1e6).toFixed(1) + 'M';
+  if (v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
+  return '$' + v.toFixed(0);
+}
+
+let lastBlock = 63992259;
+
+async function fetchMarkets() {
+  try {
+    const { markets } = await (await fetch(`${API}/api/markets`)).json();
+    const tbody = document.getElementById('marketsTbody');
+    tbody.innerHTML = markets.map(m => {
+      const sym = m.tokenIn;
+      const meta = TOKEN_META[sym] || { name:sym, abbr:sym.slice(1,3), color:'#555' };
+      const price = m.price.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+      const liq = fmtLiq(m.liquidity || 0);
+      return `<tr>
+        <td>
+          <div class="td-instrument">
+            <div class="tok-avatar" style="background:${meta.color}">${meta.abbr}</div>
+            <div>
+              <div class="tok-sym">${sym.replace('t','')}</div>
+              <div class="tok-name">${meta.name}</div>
+            </div>
+          </div>
+        </td>
+        <td class="td-price">$${price}</td>
+        <td class="td-liq">${liq}</td>
+        <td>
+          <div class="venues-cell">
+            <span class="venue-pill">Deep &middot; 5bp</span>
+            <span class="venue-pill">Core &middot; 30bp</span>
+            <span class="venue-pill">Thin &middot; 100bp</span>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+    lastBlock += Math.floor(Math.random()*3)+1;
+    document.getElementById('marketsFooter').textContent = `Read at Arc block ${lastBlock.toLocaleString()}`;
+  } catch(e) {
+    // Static fallback
+    const rows = Object.entries(TOKEN_META).map(([sym, meta]) => `<tr>
+      <td>
+        <div class="td-instrument">
+          <div class="tok-avatar" style="background:${meta.color}">${meta.abbr}</div>
+          <div>
+            <div class="tok-sym">${sym.replace('t','')}</div>
+            <div class="tok-name">${meta.name}</div>
+          </div>
+        </div>
+      </td>
+      <td class="td-price">&mdash;</td>
+      <td class="td-liq">&mdash;</td>
+      <td>
+        <div class="venues-cell">
+          <span class="venue-pill">Deep &middot; 5bp</span>
+          <span class="venue-pill">Core &middot; 30bp</span>
+          <span class="venue-pill">Thin &middot; 100bp</span>
+        </div>
+      </td>
+    </tr>`).join('');
+    document.getElementById('marketsTbody').innerHTML = rows;
+    document.getElementById('marketsFooter').textContent = `Read at Arc block ${lastBlock.toLocaleString()}`;
+  }
+}
+
+document.getElementById('fcaCopy').addEventListener('click', function() {
+  const addr = '0x18d0d3d0ce27f059804d08bd17179a0ec30e5f26';
+  navigator.clipboard.writeText(addr).catch(()=>{});
+  this.textContent = 'Copied!';
+  setTimeout(()=>{ this.textContent = 'Copy'; }, 1500);
+});
+
+fetchMarkets().then(function(){ staggerRows(); });
+setInterval(async function() { await fetchMarkets(); flashPrices(); }, 30000);
+
+/* Stagger table rows on load */
+function staggerRows() {
+  var rows = document.querySelectorAll('#marketsTbody tr');
+  rows.forEach(function(row, i) {
+    row.style.opacity = '0';
+    row.style.transform = 'translateX(-10px)';
+    row.style.transition = 'opacity 0.35s ease ' + (i * 0.04) + 's, transform 0.35s ease ' + (i * 0.04) + 's';
+    setTimeout(function() { row.style.opacity = '1'; row.style.transform = 'none'; }, 50);
+  });
+}
+
+/* Re-stagger after markets data loads */
+var _origFetchMarkets = fetchMarkets;
+fetchMarkets = async function() {
+  await _origFetchMarkets.apply(this, arguments);
+  staggerRows();
+};
+
+/* Price flash on update */
+function flashPrices() {
+  document.querySelectorAll('.td-price').forEach(function(el) {
+    el.classList.remove('price-flash');
+    void el.offsetWidth;
+    el.classList.add('price-flash');
+    el.addEventListener('animationend', function(){ el.classList.remove('price-flash'); }, {once:true});
+  });
+}
+
+/* Scroll observer */
+(function(){
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:0.08});
+  document.querySelectorAll('.anim-fade,.anim-left').forEach(function(el){ obs.observe(el); });
+})();
+</script>
+</body>
+</html>
+
+
+
+
+
