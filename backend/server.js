@@ -374,7 +374,7 @@ app.get('/api/swaps', (req, res) => {
 
 // ─── Start ────────────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
-  console.log(`\nShardline API  →  http://localhost:${PORT}\n`);
+  console.log(`\nPrism API  →  http://localhost:${PORT}\n`);
   console.log('  GET  /api/health');
   console.log('  GET  /api/tokens');
   console.log('  GET  /api/markets');

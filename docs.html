@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Docs &mdash; Shardline</title>
+<title>Docs &mdash; Prism</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap">
 <style>
@@ -206,7 +206,7 @@ footer{padding-block:52px 0;padding-inline:max(20px,calc(50% - 580px));border-to
           <path d="M9 2L4 7L9 12" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      shardline
+      prism
     </a>
     <ul class="nav-links">
       <li><a href="trade.html">Trade</a></li>
@@ -227,7 +227,7 @@ footer{padding-block:52px 0;padding-inline:max(20px,calc(50% - 580px));border-to
 <!-- Page header -->
 <div class="docs-header">
   <div class="sec-eyebrow">Docs</div>
-  <h1 class="docs-h1">Build on Shardline</h1>
+  <h1 class="docs-h1">Build on Prism</h1>
   <p class="docs-intro">Plug split routing into your wallet, bot or dApp. Quotes, markets and ready-to-sign swap transactions over a keyless API.</p>
 </div>
 
@@ -250,7 +250,7 @@ footer{padding-block:52px 0;padding-inline:max(20px,calc(50% - 580px));border-to
     <!-- Base Sepolia -->
     <div class="docs-section" id="arc">
       <h2 class="docs-h2">Base Sepolia</h2>
-      <p class="docs-p">Shardline is deployed on Base Sepolia — Coinbase&rsquo;s EVM-compatible L2 testnet. Gas is paid in ETH. Shardline asks your wallet to add the network automatically, or add it by hand:</p>
+      <p class="docs-p">Prism is deployed on Base Sepolia — Coinbase&rsquo;s EVM-compatible L2 testnet. Gas is paid in ETH. Prism asks your wallet to add the network automatically, or add it by hand:</p>
       <div class="arc-table-card anim-fade">
         <table class="arc-table">
           <tr><td>Network</td><td>Base Sepolia</td></tr>
@@ -404,11 +404,11 @@ await wallet.sendTransaction({ account, chain: null, to: route.to.address,
 
       <div class="contract-grid">
         <div class="contract-card anim-fade d1">
-          <div class="contract-name">ShardlinePool</div>
+          <div class="contract-name">PrismPool</div>
           <p class="contract-desc">Constant-product pool with a fixed fee and a venue label. getAmountOut is the formula the app uses.</p>
         </div>
         <div class="contract-card anim-fade d2">
-          <div class="contract-name">ShardlineRouter</div>
+          <div class="contract-name">PrismRouter</div>
           <p class="contract-desc">Pulls the input once, fans it out across legs, and enforces one minimum on the total.</p>
         </div>
         <div class="contract-card anim-fade d3">
@@ -439,7 +439,7 @@ PRIVATE_KEY=&lt;key&gt; ./deploy.sh  # deploys to Arc testnet and writes src/lib
       <p class="footer-blurb">Split-routed swaps on Base Sepolia. One order in, the best split out, settled in a single transaction.</p>
       <a href="#" class="footer-social">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L2.002 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-        Follow @ShardlineHq
+        Follow @PrismDex
       </a><br>
       <div class="footer-ca-box" style="margin-top:10px">
         <span class="fca-label">CA</span>
@@ -476,7 +476,7 @@ PRIVATE_KEY=&lt;key&gt; ./deploy.sh  # deploys to Arc testnet and writes src/lib
     <span>Base Sepolia &middot; chain 84532</span>
     <span>Testnet only. Tokens here have no value.</span>
   </div>
-  <div class="footer-watermark" aria-hidden="true">shardline</div>
+  <div class="footer-watermark" aria-hidden="true">prism</div>
 </footer>
 
 <script>
