@@ -616,40 +616,25 @@ document.querySelectorAll('.slip-btn').forEach(function(b) {
   });
 });
 
-/* Tabs */
-document.getElementById('tabBuy').addEventListener('click', function() {
-  document.getElementById('tabBuy').classList.add('active');
-  document.getElementById('tabSell').classList.remove('active');
-});
-document.getElementById('tabSell').addEventListener('click', function() {
-  document.getElementById('tabSell').classList.add('active');
-  document.getElementById('tabBuy').classList.remove('active');
-});
-document.getElementById('btnDir').addEventListener('click', function() {
-  direction = direction === 'tUSD_to_tok' ? 'tok_to_tUSD' : 'tUSD_to_tok';
+/* Direction switcher — shared by tabs and ↕ button */
+function setDirection(newDir) {
+  direction = newDir;
 
-  // Animate the button
-  var btn = document.getElementById('btnDir');
-  btn.style.transform = 'rotate(180deg)';
-  setTimeout(function(){ btn.style.transform = ''; }, 300);
-
+  // Sync tab highlight
   if (direction === 'tUSD_to_tok') {
-    // Pay tUSD, receive token
+    document.getElementById('tabBuy').classList.add('active');
+    document.getElementById('tabSell').classList.remove('active');
     document.getElementById('payTusdPill').style.display = '';
     document.getElementById('payTokPill').style.display = 'none';
     document.getElementById('tokBtn').style.display = '';
     document.getElementById('rcvTusdPill').style.display = 'none';
-    document.getElementById('payLabel').textContent = 'You pay';
-    document.getElementById('rcvLabel').textContent = 'You receive';
   } else {
-    // Pay token, receive tUSD
+    document.getElementById('tabSell').classList.add('active');
+    document.getElementById('tabBuy').classList.remove('active');
     document.getElementById('payTusdPill').style.display = 'none';
     document.getElementById('payTokPill').style.display = '';
     document.getElementById('tokBtn').style.display = 'none';
     document.getElementById('rcvTusdPill').style.display = '';
-    document.getElementById('payLabel').textContent = 'You pay';
-    document.getElementById('rcvLabel').textContent = 'You receive';
-    // Sync payTokPill with selected token
     document.getElementById('payTokDot').style.background = currentTok.color;
     document.getElementById('payTokDot').textContent = currentTok.abbr;
     document.getElementById('payTokSym').textContent = currentTok.sym;
@@ -660,6 +645,22 @@ document.getElementById('btnDir').addEventListener('click', function() {
   document.getElementById('sumGain').textContent = '—';
   updatePools([0, 0, 0]);
   fetchQuote();
+}
+
+/* Tabs */
+document.getElementById('tabBuy').addEventListener('click', function() {
+  if (direction !== 'tUSD_to_tok') setDirection('tUSD_to_tok');
+});
+document.getElementById('tabSell').addEventListener('click', function() {
+  if (direction !== 'tok_to_tUSD') setDirection('tok_to_tUSD');
+});
+
+/* ↕ button */
+document.getElementById('btnDir').addEventListener('click', function() {
+  var btn = document.getElementById('btnDir');
+  btn.style.transform = 'rotate(180deg)';
+  setTimeout(function(){ btn.style.transform = ''; }, 300);
+  setDirection(direction === 'tUSD_to_tok' ? 'tok_to_tUSD' : 'tUSD_to_tok');
 });
 
 /* Draw shard map lines */
