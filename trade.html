@@ -644,7 +644,7 @@ function setDirection(newDir) {
   document.getElementById('sumMin').textContent = '—';
   document.getElementById('sumGain').textContent = '—';
   updatePools([0, 0, 0]);
-  if (swapState !== 'idle') checkApprovalThenShow();
+  if (connectedAddress && ethersProvider) checkApprovalThenShow();
   fetchQuote();
 }
 
@@ -1046,13 +1046,15 @@ function showApproveButton() {
 
 async function checkApprovalThenShow() {
   if (!connectedAddress || !ethersProvider || !contractsDeployed()) return;
-  var tokenInSym  = direction === 'tUSD_to_tok' ? 'tUSD' : currentTok.sym;
+  var dirSnap = direction;
+  var tokenInSym  = dirSnap === 'tUSD_to_tok' ? 'tUSD' : currentTok.sym;
   var tokenInAddr = CONTRACTS.tokens[tokenInSym];
   try {
     var token = new ethers.Contract(tokenInAddr, ERC20_ABI, ethersProvider);
     var allowance = await token.allowance(connectedAddress, CONTRACTS.router);
+    if (direction !== dirSnap) return;
     if (allowance > 0n) { showSwapButton(); } else { showApproveButton(); }
-  } catch(e) { showApproveButton(); }
+  } catch(e) { if (direction === dirSnap) showApproveButton(); }
 }
 
 async function doApprove() {
