@@ -1187,7 +1187,8 @@ async function connectMeta() {
     document.getElementById('btnMeta').innerHTML = '&#x1F98A; ' + short;
     document.getElementById('mintDesc').textContent = 'Click to mint 1,000,000 tUSD to your wallet.';
     showToast('MetaMask connected — ' + short);
-    checkApprovalThenShow();
+    showApproveButton();          // instant feedback
+    checkApprovalThenShow();      // upgrades to Swap if already approved
     fetchAllBalances();
     fetchTxHistory();
   } catch (e) {
